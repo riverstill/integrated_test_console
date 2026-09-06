@@ -2,6 +2,23 @@
 
 目标机要求: Windows 10/11 + 系统 Python 3.9+ (已装, PATH 可用) + NI-VISA 或 Keysight VISA.
 
+## 0. 安装（二选一）
+
+- **安装程序（推荐）**：运行 `IntegratedTestConsole-Setup-<版本>.exe`，向导装到
+  `Program Files\IntegratedTestConsole`，自动建开始菜单/桌面快捷方式。
+  安装时若提示缺 Python，可继续装，跑测试前补上即可。
+- **绿色包**：解压 `IntegratedTestConsole-win64` artifact，双击 `Console.WPF.exe`。
+
+### “未知发布者”说明
+
+首次运行若 SmartScreen 提示“未知发布者”，原因是程序**没有购买代码签名证书**
+（个人/小团队常见情况，非病毒）。三种处理：
+
+1. 单机放行：点“更多信息”→“仍要运行”。
+2. 内部分发根治：用自签名证书签名 + 组策略把证书推到各机的“受信任的发布者”。
+3. 彻底消除：购买 OV/EV 代码签名证书，把 `CODE_SIGN_PFX`（pfx 的 base64）和
+   `CODE_SIGN_PASSWORD` 配进 GitHub Secrets，CI 会自动签名 exe 和安装包。
+
 ## 1. 安装 Python 依赖 (系统 Python)
 
 ```bat

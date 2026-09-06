@@ -26,6 +26,12 @@
   body.dark th { background: #1e293b; }
   body.dark .tip { background: #3a2e12; border-color: #d97706; color: #fde68a; }
   body.dark .ver { color: #94a3b8; }
+  /* 帮助页跑在 IE 内核 WebBrowser 里，WPF 滚动条样式管不到这里，
+     用 IE 私有滚动条配色（IE7+ 均支持） */
+  body { scrollbar-face-color: #cbd5e1; scrollbar-track-color: #f1f5f9;
+         scrollbar-arrow-color: #64748b; scrollbar-base-color: #f1f5f9; }
+  body.dark { scrollbar-face-color: #334155; scrollbar-track-color: #0b1220;
+              scrollbar-arrow-color: #94a3b8; scrollbar-base-color: #0b1220; }
 </style>
 </head>
 <body>

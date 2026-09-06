@@ -28,4 +28,4 @@ stdio; C# spawns `python -u -m engine <cmd>`. Do NOT mix: new test logic goes in
 
 ## Release checklist
 
-Bump all three or update-check lies: csproj `<Version>`, `engine/__init__.py::__version__`, update manifest (`update_manifest.example.json` shape). `HELP.html` ships beside the exe; keep it in sync with behavior changes.
+Bump all three or update-check lies: csproj `<Version>`, `engine/__init__.py::__version__`, update manifest (`update_manifest.example.json` shape). `HELP.html` ships beside the exe; keep it in sync with behavior changes. Installer version is auto-read from csproj by CI (`installer/setup.iss` takes `/DMyAppVersion`); code signing is opt-in via `CODE_SIGN_PFX`/`CODE_SIGN_PASSWORD` repo secrets (unsigned → SmartScreen "unknown publisher", expected).
