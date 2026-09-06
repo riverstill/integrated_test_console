@@ -50,6 +50,13 @@ public partial class MainWindow : Window
     private void DemoToggled(object s, RoutedEventArgs e) =>
         App.State.DemoMode = DemoCheck.IsChecked == true;
 
+    private void TabChanged(object s, SelectionChangedEventArgs e)
+    {
+        // 帮助页延迟加载: 仅当用户点开时才初始化 WebBrowser
+        if (e.AddedItems.Contains(HelpTab))
+            HelpTab.Reload();
+    }
+
     private async void SelfCheck(object s, RoutedEventArgs e) => await RunStartupCheck();
 
     private void DetectPython(object s, RoutedEventArgs e) =>

@@ -9,6 +9,43 @@ public partial class App : Application
     public static AppState State { get; } = new();
     public static string EngineProbeLog { get; private set; } = "";
 
+    public static string CrashLogPath => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+        "IntegratedTestConsole", "crash.log");
+
+    public App()
+    {
+        DispatcherUnhandledException += (_, e) =>
+        {
+            WriteCrashLog("DispatcherUnhandledException", e.Exception);
+            MessageBox.Show(
+                "程序发生未处理异常，已记录到:\n" + CrashLogPath +
+                "\n\n" + e.Exception.GetBaseException().Message,
+                "集成测试控制台", MessageBoxButton.OK, MessageBoxImage.Error);
+            e.Handled = true;
+            Shutdown(-1);
+        };
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+        {
+            WriteCrashLog("UnhandledException", e.ExceptionObject as Exception);
+            MessageBox.Show(
+                "程序启动失败，已记录到:\n" + CrashLogPath +
+                "\n\n" + (e.ExceptionObject as Exception)?.GetBaseException().Message,
+                "集成测试控制台", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+    }
+
+    public static void WriteCrashLog(string kind, Exception? ex)
+    {
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(CrashLogPath)!);
+            File.AppendAllText(CrashLogPath,
+                $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {kind}\n{ex}\n\n");
+        }
+        catch { }
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         State.EngineRoot = LocateEngineRoot(out var log);
@@ -18,7 +55,15 @@ public partial class App : Application
             ?? Services.PythonEnv.DetectDefault();
         State.Theme = saved.Theme ?? "System";
         State.UpdateUrl = saved.UpdateUrl ?? "";
-        Services.ThemeManager.Apply(State.Theme);
+        try
+        {
+            Services.ThemeManager.Apply(State.Theme);
+        }
+        catch (Exception ex)
+        {
+            // 主题加载失败不阻塞启动, 用默认样式跑
+            WriteCrashLog("ThemeApply", ex);
+        }
         base.OnStartup(e);
     }
 

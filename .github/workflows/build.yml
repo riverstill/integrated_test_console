@@ -39,6 +39,22 @@ jobs:
         run: python -u -m engine list_projects
       - name: Restore & Build
         run: dotnet build Console.WPF/IntegratedTestConsole.sln -c Release
+      - name: Assert WPF resources (ico/theme 打进程序集)
+        shell: pwsh
+        run: |
+          $dll = "Console.WPF/Console.WPF/bin/Release/net8.0-windows/Console.WPF.dll"
+          $asm = [Reflection.Assembly]::LoadFrom((Join-Path $PWD $dll))
+          $names = $asm.GetManifestResourceNames()
+          Write-Host ($names -join "`n")
+          $res = $asm.GetManifestResourceStream("Console.WPF.g.resources")
+          if ($null -eq $res) { throw "缺少 g.resources" }
+          $reader = New-Object System.Resources.ResourceReader($res)
+          $keys = @($reader | ForEach-Object { $_.Key })
+          Write-Host ($keys -join "`n")
+          foreach ($need in @("themes/light.xaml", "themes/dark.xaml", "app.ico")) {
+            if ($keys -notcontains $need) { throw "程序集缺资源: $need" }
+          }
+          Write-Host "resources ok"
       - name: Publish (framework-dependent, 最小体积)
         run: dotnet publish Console.WPF/Console.WPF/Console.WPF.csproj -c Release -o publish
       - name: Assemble portable package

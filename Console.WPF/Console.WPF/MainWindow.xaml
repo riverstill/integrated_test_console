@@ -14,7 +14,7 @@
                       VerticalAlignment="Center" Margin="8,0" Checked="DemoToggled" Unchecked="DemoToggled"/>
             <Button Content="Python自检" Margin="8,0" Padding="10,2" Click="SelfCheck"/>
         </StackPanel>
-        <TabControl x:Name="Tabs" Margin="10,0,10,10">
+        <TabControl x:Name="Tabs" Margin="10,0,10,10" SelectionChanged="TabChanged">
             <TabItem Header="1.测试项目"><v:ProjectsView x:Name="ProjectsTab"/></TabItem>
             <TabItem Header="2.系统框图+仪器"><v:DiagramView x:Name="DiagramTab"/></TabItem>
             <TabItem Header="3.测试配置"><v:ConfigView x:Name="ConfigTab"/></TabItem>
