@@ -39,20 +39,19 @@ jobs:
         run: python -u -m engine list_projects
       - name: Restore & Build
         run: dotnet build Console.WPF/IntegratedTestConsole.sln -c Release
-      - name: Assert WPF resources (ico/theme 打进程序集)
+      - name: Assert WPF item types (ico=Resource, xaml=Page)
         shell: pwsh
         run: |
-          $dll = "Console.WPF/Console.WPF/bin/Release/net8.0-windows/Console.WPF.dll"
-          $asm = [Reflection.Assembly]::LoadFrom((Join-Path $PWD $dll))
-          $names = $asm.GetManifestResourceNames()
-          Write-Host ($names -join "`n")
-          $res = $asm.GetManifestResourceStream("Console.WPF.g.resources")
-          if ($null -eq $res) { throw "缺少 g.resources" }
-          $reader = New-Object System.Resources.ResourceReader($res)
-          $keys = @($reader | ForEach-Object { $_.Key })
-          Write-Host ($keys -join "`n")
-          foreach ($need in @("themes/light.xaml", "themes/dark.xaml", "app.ico")) {
-            if ($keys -notcontains $need) { throw "程序集缺资源: $need" }
+          $json = dotnet msbuild Console.WPF/Console.WPF/Console.WPF.csproj -getItem:Resource -getItem:Page -nologo | Out-String | ConvertFrom-Json
+          $res = @($json.Items.Resource | ForEach-Object { $_.Identity })
+          $pages = @($json.Items.Page | ForEach-Object { $_.Identity })
+          Write-Host "Resource:"; $res | ForEach-Object { Write-Host "  $_" }
+          Write-Host "Page:"; $pages | ForEach-Object { Write-Host "  $_" }
+          foreach ($need in @("app.ico")) {
+            if (!($res -like "*$need")) { throw "缺 Resource: $need（XAML 引用会在启动报找不到资源）" }
+          }
+          foreach ($need in @("Themes\Light.xaml", "Themes\Dark.xaml", "MainWindow.xaml")) {
+            if (!($pages -like "*$need")) { throw "缺 Page: $need" }
           }
           Write-Host "resources ok"
       - name: Publish (framework-dependent, 最小体积)
