@@ -51,6 +51,7 @@ config_schema.json / workflow.py (实现 run(cfg, binding, out_dir, ctrl, open_f
 ## 5b. 设置 / 主题 / 帮助 / 更新
 
 - “设置”页：主题（跟随系统/浅色/深色）、Python 命令、更新源 manifest 地址、检查更新。
+- 主题免编译修改：改 exe 旁 `Themes/Light.xaml` / `Dark.xaml`（纯文本色值+样式），设置页点“重新加载主题”即生效；删掉文件则回退内置主题。
 - “帮助”页：内置 `HELP.html` 离线帮助（与 exe 同级）。
 - 发版三处版本号同步：csproj `<Version>`、`engine/__init__.py`、`update_manifest.json`。
 

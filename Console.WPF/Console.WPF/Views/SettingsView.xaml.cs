@@ -64,4 +64,25 @@ public partial class SettingsView : UserControl
             MessageBox.Show(msg, "发现新版本",
                 MessageBoxButton.OK, MessageBoxImage.Information);
     }
+
+    private void ReloadTheme(object s, RoutedEventArgs e)
+    {
+        try
+        {
+            ThemeManager.Apply(App.State.Theme);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show("主题加载失败，已回退内置主题:\n" + ex.Message,
+                "主题", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void OpenThemeDir(object s, RoutedEventArgs e)
+    {
+        var dir = ThemeManager.ExternalDir
+            ?? System.IO.Path.Combine(App.State.EngineRoot, "Themes");
+        System.IO.Directory.CreateDirectory(dir);
+        System.Diagnostics.Process.Start("explorer", $"\"{dir}\"");
+    }
 }

@@ -69,8 +69,9 @@ public partial class MainWindow : Window
     private void TabChanged(object s, SelectionChangedEventArgs e)
     {
         // 帮助页延迟加载: 仅当用户点开时才初始化 WebBrowser
-        if (e.AddedItems.Contains(HelpTab))
-            HelpTab.Reload();
+        // (注意: AddedItems 里是 TabItem 不是里面的 UserControl, 不能直接 Contains)
+        if (ReferenceEquals(Tabs.SelectedContent, HelpTab))
+            HelpTab.EnsureLoaded();
     }
 
     private async void SelfCheck(object s, RoutedEventArgs e) => await RunStartupCheck();

@@ -55,6 +55,8 @@ public partial class App : Application
             ?? Services.PythonEnv.DetectDefault();
         State.Theme = saved.Theme ?? "System";
         State.UpdateUrl = saved.UpdateUrl ?? "";
+        Services.ThemeManager.ExternalDir =
+            Path.Combine(State.EngineRoot, "Themes");
         try
         {
             Services.ThemeManager.Apply(State.Theme);

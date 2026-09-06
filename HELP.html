@@ -17,6 +17,15 @@
   th { background: #e0f2fe; }
   .tip { background: #fefce8; border: 1px solid #facc15; border-radius: 8px; padding: 10px 14px; }
   .ver { color: #64748b; font-size: 13px; }
+  /* 深色模式: 由程序给 body 加 class="dark" 切换（IE 内核不支持 prefers-color-scheme） */
+  body.dark { color: #e2e8f0; background: #0f172a; }
+  body.dark h1 { border-color: #38bdf8; }
+  body.dark h2 { color: #38bdf8; border-color: #38bdf8; }
+  body.dark code { background: #1e293b; color: #e2e8f0; }
+  body.dark table, body.dark th, body.dark td { border-color: #334155; }
+  body.dark th { background: #1e293b; }
+  body.dark .tip { background: #3a2e12; border-color: #d97706; color: #fde68a; }
+  body.dark .ver { color: #94a3b8; }
 </style>
 </head>
 <body>

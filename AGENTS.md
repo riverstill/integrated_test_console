@@ -20,6 +20,9 @@ stdio; C# spawns `python -u -m engine <cmd>`. Do NOT mix: new test logic goes in
 - `ImplicitUsings` is on. JSON strings: use `GetValue<string>()`, never `ToString()` (adds quotes).
 - **Every XAML-referenced asset must be declared**: loose `app.ico` with only `<ApplicationIcon>` caused startup `XamlParseException: 找不到资源"app.ico"`. CI asserts via `msbuild -getItem:Resource/Page` — extend that step if you add assets (pwsh can't `LoadFrom` WPF assemblies, don't try).
 - Themes (`Themes/Light|Dark.xaml`) are swapped wholesale; views must use `{DynamicResource …}` (never hardcoded `Gray`), code-behind via `FindResource`. `ThemeManager.Changed` event exists for code-drawn content.
+- **Loose theme override**: if `Themes/<Light|Dark>.xaml` exists beside the exe it wins over the embedded dict (no rebuild needed; parse failure falls back + logs). CI ships source xamls to `dist/Themes/`. When regenerating `Dark.xaml` from `Light.xaml`, keep the key→color map in sync.
+- `HelpView` uses IE-based `WebBrowser` (no CSS vars, no `prefers-color-scheme`): dark mode is a `body.dark` class swapped in C# before `NavigateToString`. It navigates lazily on tab select (`Tabs.SelectedContent`, NOT `AddedItems.Contains`) — keep it that way.
+- Disabled `ScrollBar`s collapse via style trigger (no reserved gutter); don't fight this with explicit visibility.
 - Startup crash safety: `App` global handlers write `%AppData%/IntegratedTestConsole/crash.log`. Don't add eager-loading controls to startup path — `HelpView` navigates lazily on tab select for this reason.
 - Settings persist in `%AppData%/…/settings.json`; keep the record backward-compatible (missing fields → defaults).
 
