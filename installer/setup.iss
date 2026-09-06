@@ -25,7 +25,8 @@ UninstallDisplayName=集成测试控制台
 ShowLanguageDialog=no
 
 [Languages]
-Name: "chinesesimp"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+; 中文语言文件由 CI 从官方 issrc 仓库拉取到本目录（choco 版自带包缺失该文件）
+Name: "chinesesimp"; MessagesFile: "ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加选项:"

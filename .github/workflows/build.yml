@@ -100,6 +100,12 @@ jobs:
           Remove-Item $pfx -Force
       - name: Install Inno Setup
         run: choco install innosetup -y
+      - name: Fetch ChineseSimplified.isl (choco 包缺失中文语言文件)
+        shell: pwsh
+        run: |
+          Invoke-WebRequest `
+            -Uri "https://raw.githubusercontent.com/jrsoftware/issrc/main/Files/Languages/ChineseSimplified.isl" `
+            -OutFile "installer/ChineseSimplified.isl"
       - name: Build installer
         run: |
           & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" `
