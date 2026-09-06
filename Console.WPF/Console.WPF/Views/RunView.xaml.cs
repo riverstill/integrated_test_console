@@ -24,6 +24,7 @@ public partial class RunView : UserControl
             Plot.Plot.XAxis.TickLabelFormatter(v => v >= 1000 ? $"{v / 1000:g}k" : $"{v:g}");
             Plot.Plot.XAxis.SetScaleLog(10);
             Plot.Plot.YLabel("dB"); Plot.Plot.XLabel("Hz (log)");
+            Plot.Refresh();
         };
     }
 
@@ -93,8 +94,9 @@ public partial class RunView : UserControl
                     pts.Add((x, y));
                     Plot.Plot.Clear();
                     foreach (var (k, v) in _series)
-                        Plot.Plot.Add.Scatter(v.Select(p => p.x).ToArray(),
-                            v.Select(p => p.y).ToArray());
+                        Plot.Plot.AddScatter(v.Select(p => p.x).ToArray(),
+                            v.Select(p => p.y).ToArray(), label: k);
+                    Plot.Plot.Legend();
                     Plot.Refresh();
                 }
                 break;
