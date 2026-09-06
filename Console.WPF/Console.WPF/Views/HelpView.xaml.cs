@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -5,62 +6,35 @@ using System.Windows.Controls;
 namespace Console.WPF.Views;
 
 /// <summary>
-/// 帮助页: 显示与 exe 同级的 HELP.html (离线可用).
-/// WebBrowser 是 IE 内核, 不支持 prefers-color-scheme/CSS 变量,
-/// 深色适配靠给 body 加 class="dark" (样式见 HELP.html).
+/// 帮助页: 原生 WPF 简要说明（不再内嵌 IE 内核浏览器，避免 ActiveX 启动风险与样式问题）。
+/// 详细帮助 HELP.html 用系统默认浏览器打开。
 /// </summary>
 public partial class HelpView : UserControl
 {
-    private bool _autoLoaded;
-
     public HelpView()
     {
         InitializeComponent();
-        // 延迟到 tab 被选中时才导航: WebBrowser(ActiveX) 初始化异常不再导致启动崩溃
         Loaded += (_, _) => PathText.Text =
-            Path.Combine(App.State.EngineRoot, "HELP.html");
-        // 主题切换时若已加载则重渲染深浅
-        Services.ThemeManager.Changed += _ =>
-        {
-            if (_autoLoaded) Dispatcher.Invoke(() => Reload());
-        };
+            "完整帮助: " + Path.Combine(App.State.EngineRoot, "HELP.html");
     }
 
-    private void Reload(object? s = null, RoutedEventArgs? e = null) => Reload();
-
-    /// <summary>首次点开 tab 时自动调用一次, 之后靠“重新加载”按钮手动刷新.</summary>
-    public void EnsureLoaded()
+    private void OpenFullHelp(object s, RoutedEventArgs e)
     {
-        if (_autoLoaded) return;
-        _autoLoaded = true;
-        Reload();
-    }
-
-    public void Reload()
-    {
-        _autoLoaded = true;
         var help = Path.Combine(App.State.EngineRoot, "HELP.html");
-        PathText.Text = help;
+        if (!File.Exists(help))
+        {
+            MessageBox.Show("找不到 HELP.html，请确认其与 exe 在同一目录。\n\n" + help,
+                "帮助", MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
         try
         {
-            if (!File.Exists(help))
-            {
-                Browser.NavigateToString(
-                    "<html><body><p>找不到 HELP.html，请确认其与 exe 在同一目录。</p></body></html>");
-                return;
-            }
-            var html = File.ReadAllText(help);
-            if (Services.ThemeManager.IsDarkNow(App.State.Theme))
-                html = html.Replace("<body>", "<body class=\"dark\">");
-            Browser.NavigateToString(html);
+            Process.Start(new ProcessStartInfo(help) { UseShellExecute = true });
         }
         catch (Exception ex)
         {
-            App.WriteCrashLog("HelpNavigate", ex);
-            Browser.NavigateToString(
-                "<html><body><p>帮助页加载失败: " +
-                System.Net.WebUtility.HtmlEncode(ex.GetBaseException().Message) +
-                "</p></body></html>");
+            MessageBox.Show("无法打开浏览器:\n" + ex.Message,
+                "帮助", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 }
