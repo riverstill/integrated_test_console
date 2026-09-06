@@ -1,20 +1,45 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <!-- ===== 浅色主题 · 扁平风 ===== -->
   <Color x:Key="AppBgColor">#F1F5F9</Color>
   <Color x:Key="PanelBgColor">#FFFFFF</Color>
   <Color x:Key="TextFgColor">#0F172A</Color>
   <Color x:Key="SubtleFgColor">#64748B</Color>
   <Color x:Key="AccentColor">#0284C7</Color>
+  <Color x:Key="AccentFgColor">#FFFFFF</Color>
+  <Color x:Key="AccentHoverColor">#0369A1</Color>
+  <Color x:Key="AccentPressedColor">#075985</Color>
   <Color x:Key="BorderColor">#CBD5E1</Color>
   <Color x:Key="InputBgColor">#FFFFFF</Color>
+  <Color x:Key="HoverBgColor">#E8EEF4</Color>
+  <Color x:Key="PressedBgColor">#D7E0EA</Color>
+  <Color x:Key="SelectedBgColor">#D9EFFA</Color>
+  <Color x:Key="HeaderBgColor">#334155</Color>
+  <Color x:Key="HeaderFgColor">#FFFFFF</Color>
+  <Color x:Key="SuccessColor">#16A34A</Color>
+  <Color x:Key="WarnColor">#D97706</Color>
+  <Color x:Key="DangerColor">#DC2626</Color>
+  <Color x:Key="DangerHoverColor">#B91C1C</Color>
 
   <SolidColorBrush x:Key="AppBg" Color="{StaticResource AppBgColor}"/>
   <SolidColorBrush x:Key="PanelBg" Color="{StaticResource PanelBgColor}"/>
   <SolidColorBrush x:Key="TextFg" Color="{StaticResource TextFgColor}"/>
   <SolidColorBrush x:Key="SubtleFg" Color="{StaticResource SubtleFgColor}"/>
   <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}"/>
+  <SolidColorBrush x:Key="AccentFg" Color="{StaticResource AccentFgColor}"/>
+  <SolidColorBrush x:Key="AccentHover" Color="{StaticResource AccentHoverColor}"/>
+  <SolidColorBrush x:Key="AccentPressed" Color="{StaticResource AccentPressedColor}"/>
   <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
   <SolidColorBrush x:Key="InputBg" Color="{StaticResource InputBgColor}"/>
+  <SolidColorBrush x:Key="HoverBg" Color="{StaticResource HoverBgColor}"/>
+  <SolidColorBrush x:Key="PressedBg" Color="{StaticResource PressedBgColor}"/>
+  <SolidColorBrush x:Key="SelectedBg" Color="{StaticResource SelectedBgColor}"/>
+  <SolidColorBrush x:Key="HeaderBg" Color="{StaticResource HeaderBgColor}"/>
+  <SolidColorBrush x:Key="HeaderFg" Color="{StaticResource HeaderFgColor}"/>
+  <SolidColorBrush x:Key="Success" Color="{StaticResource SuccessColor}"/>
+  <SolidColorBrush x:Key="Warn" Color="{StaticResource WarnColor}"/>
+  <SolidColorBrush x:Key="Danger" Color="{StaticResource DangerColor}"/>
+  <SolidColorBrush x:Key="DangerHover" Color="{StaticResource DangerHoverColor}"/>
 
   <Style TargetType="Window">
     <Setter Property="Background" Value="{StaticResource AppBg}"/>
@@ -22,38 +47,223 @@
   <Style TargetType="TextBlock">
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
   </Style>
-  <Style TargetType="TabControl">
-    <Setter Property="Background" Value="{StaticResource AppBg}"/>
-  </Style>
+
+  <!-- ===== Button：圆角扁平 + 三态 ===== -->
   <Style TargetType="Button">
     <Setter Property="Background" Value="{StaticResource PanelBg}"/>
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-    <Setter Property="Padding" Value="8,3"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="12,5"/>
+    <Setter Property="MinHeight" Value="28"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="6" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverBg}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource PressedBg}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource AppBg}"/>
+              <Setter Property="Foreground" Value="{StaticResource SubtleFg}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
+
+  <Style x:Key="PrimaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="{StaticResource Accent}"/>
+    <Setter Property="Foreground" Value="{StaticResource AccentFg}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="6" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentHover}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentHover}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentPressed}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentPressed}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource AppBg}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+              <Setter Property="Foreground" Value="{StaticResource SubtleFg}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Setter Property="Background" Value="{StaticResource Danger}"/>
+    <Setter Property="Foreground" Value="{StaticResource AccentFg}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource Danger}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}"
+                  BorderThickness="{TemplateBinding BorderThickness}"
+                  CornerRadius="6" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource DangerHover}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource DangerHover}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource DangerHover}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource DangerHover}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource AppBg}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+              <Setter Property="Foreground" Value="{StaticResource SubtleFg}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ===== Tab：下划线指示 ===== -->
+  <Style TargetType="TabControl">
+    <Setter Property="Background" Value="{StaticResource AppBg}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="0,6,0,0"/>
+  </Style>
+  <Style TargetType="TabItem">
+    <Setter Property="Foreground" Value="{StaticResource SubtleFg}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Padding" Value="14,8"/>
+    <Setter Property="FontSize" Value="13"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="TabItem">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                  Padding="{TemplateBinding Padding}"
+                  BorderThickness="0,0,0,3" BorderBrush="Transparent">
+            <ContentPresenter ContentSource="Header"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource HoverBg}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+              <Setter Property="Foreground" Value="{StaticResource Accent}"/>
+              <Setter Property="FontWeight" Value="SemiBold"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ===== 输入与列表 ===== -->
   <Style TargetType="TextBox">
     <Setter Property="Background" Value="{StaticResource InputBg}"/>
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="6,4"/>
+    <Style.Triggers>
+      <Trigger Property="IsFocused" Value="True">
+        <Setter Property="BorderBrush" Value="{StaticResource Accent}"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
   <Style TargetType="ComboBox">
     <Setter Property="Background" Value="{StaticResource InputBg}"/>
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="Padding" Value="6,4"/>
   </Style>
   <Style TargetType="ListBox">
     <Setter Property="Background" Value="{StaticResource PanelBg}"/>
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="2"/>
+  </Style>
+  <Style TargetType="ListBoxItem">
+    <Setter Property="Padding" Value="6,7"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource HoverBg}"/>
+      </Trigger>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{StaticResource SelectedBg}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
   <Style TargetType="DataGrid">
     <Setter Property="Background" Value="{StaticResource PanelBg}"/>
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="RowBackground" Value="{StaticResource PanelBg}"/>
     <Setter Property="AlternatingRowBackground" Value="{StaticResource AppBg}"/>
+    <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+    <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="HeadersVisibility" Value="Column"/>
+    <Setter Property="RowHeaderWidth" Value="0"/>
+  </Style>
+  <Style TargetType="DataGridColumnHeader">
+    <Setter Property="Background" Value="{StaticResource HeaderBg}"/>
+    <Setter Property="Foreground" Value="{StaticResource HeaderFg}"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Padding" Value="8,7"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style TargetType="DataGridRow">
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource HoverBg}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  <Style TargetType="DataGridCell">
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="8,4"/>
+    <Style.Triggers>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{StaticResource SelectedBg}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
   <Style TargetType="CheckBox">
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
+    <Setter Property="VerticalContentAlignment" Value="Center"/>
   </Style>
 </ResourceDictionary>

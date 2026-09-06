@@ -16,12 +16,22 @@ public partial class MainWindow : Window
         Loaded += async (_, _) => await RunStartupCheck();
     }
 
+    private static Brush Br(string key) =>
+        (Brush)Application.Current.FindResource(key);
+
+    private void SetPill(bool? ok, string text)
+    {
+        EnvInfo.Text = text;
+        var color = ok == null ? "SubtleFg" : ok.Value ? "Success" : "Danger";
+        StatusDot.Fill = Br(color);
+        StatusPill.BorderBrush = Br(color);
+    }
+
     private async Task RunStartupCheck()
     {
-        EnvInfo.Text = "自检中..."; EnvInfo.Foreground = Brushes.Gray;
+        SetPill(null, "自检中...");
         var (ok, msg) = await Task.Run(SelfCheckCore);
-        EnvInfo.Text = msg;
-        EnvInfo.Foreground = ok ? Brushes.DarkGreen : Brushes.DarkRed;
+        SetPill(ok, msg);
     }
 
     private static (bool, string) SelfCheckCore()

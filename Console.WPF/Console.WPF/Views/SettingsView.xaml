@@ -6,17 +6,17 @@
             <TextBlock Text="主题" FontWeight="Bold" FontSize="14" Margin="0,4"/>
             <ComboBox x:Name="ThemeBox" Width="220" HorizontalAlignment="Left"
                       SelectionChanged="ThemeChanged"/>
-            <TextBlock Margin="0,4" Foreground="Gray" TextWrapping="Wrap"
+            <TextBlock Margin="0,4" Foreground="{DynamicResource SubtleFg}" TextWrapping="Wrap"
                        Text="“跟随系统”读取 Windows 设置 → 个性化 → 颜色 → 选择应用模式。"/>
             <TextBlock Text="Python 命令" FontWeight="Bold" FontSize="14" Margin="0,16,0,0"/>
             <TextBox x:Name="PythonBox" TextChanged="PythonChanged"/>
             <TextBlock Text="程序更新" FontWeight="Bold" FontSize="14" Margin="0,16,0,0"/>
-            <TextBlock Margin="0,4" Foreground="Gray" TextWrapping="Wrap"
+            <TextBlock Margin="0,4" Foreground="{DynamicResource SubtleFg}" TextWrapping="Wrap"
                        Text="更新源 manifest 地址（JSON：version/downloadUrl/notes），为空表示不检查更新。"/>
             <TextBox x:Name="UpdateBox" TextChanged="UpdateChanged"/>
             <StackPanel Orientation="Horizontal" Margin="0,8">
                 <Button Content="检查更新" Padding="12,4" Click="CheckUpdate"/>
-                <TextBlock x:Name="VersionText" Margin="16,0" VerticalAlignment="Center" Foreground="Gray"/>
+                <TextBlock x:Name="VersionText" Margin="16,0" VerticalAlignment="Center" Foreground="{DynamicResource SubtleFg}"/>
             </StackPanel>
             <TextBlock x:Name="UpdateMsg" TextWrapping="Wrap" Margin="0,4"/>
         </StackPanel>

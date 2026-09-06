@@ -23,8 +23,24 @@ public partial class RunView : UserControl
         {
             // v4 无原生对数轴: X 用 log10(Hz), 刻度即指数 (3=1k, 6=1M, 8=100M)
             Plot.Plot.YLabel("dB"); Plot.Plot.XLabel("频率 log10(Hz)");
-            Plot.Refresh();
+            ApplyPlotTheme();
+            ThemeManager.Changed += _ => Dispatcher.Invoke(ApplyPlotTheme);
         };
+    }
+
+    /// <summary>曲线配色跟随深浅主题 (仅改面/网格/刻度色, 数据线颜色不动).</summary>
+    private void ApplyPlotTheme()
+    {
+        var dark = ThemeManager.IsDarkNow(App.State.Theme);
+        var html = System.Drawing.ColorTranslator.FromHtml;
+        if (dark)
+            Plot.Plot.Style(html("#0B1220"), html("#0B1220"), html("#334155"),
+                html("#94A3B8"), html("#E2E8F0"), html("#E2E8F0"));
+        else
+            Plot.Plot.Style(System.Drawing.Color.White, System.Drawing.Color.White,
+                System.Drawing.Color.LightGray, System.Drawing.Color.Black,
+                System.Drawing.Color.Black, System.Drawing.Color.Black);
+        Plot.Refresh();
     }
 
     private void AppendLog(string s)

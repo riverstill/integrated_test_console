@@ -6,7 +6,7 @@
             <Button Content="加载项目默认" Padding="12,4" Click="LoadDefault"/>
             <Button Content="从文件加载" Padding="12,4" Margin="8,0" Click="LoadFile"/>
             <Button Content="存为文件" Padding="12,4" Click="SaveFile"/>
-            <TextBlock Margin="12,0" VerticalAlignment="Center" Foreground="Gray"
+            <TextBlock Margin="12,0" VerticalAlignment="Center" Foreground="{DynamicResource SubtleFg}"
                        Text="同一配置可应用到多轮 DUT 测量"/>
         </StackPanel>
         <ScrollViewer><StackPanel x:Name="Form"/></ScrollViewer>

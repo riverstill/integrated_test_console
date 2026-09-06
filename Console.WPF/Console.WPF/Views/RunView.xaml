@@ -4,12 +4,12 @@
              xmlns:sp="clr-namespace:ScottPlot;assembly=ScottPlot.WPF">
     <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
-            <Button Content="开始运行" Padding="12,4" Click="Start"/>
-            <Button Content="暂停" Padding="12,4" Margin="8,0" Click="Pause"/>
-            <Button Content="继续" Padding="12,4" Click="Resume"/>
-            <Button Content="确认下一步" Padding="12,4" Margin="8,0" Click="Confirm"/>
-            <Button Content="终止" Padding="12,4" Click="Stop"/>
-            <TextBlock x:Name="Status" Margin="16,0" VerticalAlignment="Center" Foreground="Gray" Text="就绪"/>
+            <Button Content="开始运行" Style="{StaticResource PrimaryButton}" Click="Start"/>
+            <Button Content="暂停" Margin="8,0" Click="Pause"/>
+            <Button Content="继续" Click="Resume"/>
+            <Button Content="确认下一步" Margin="8,0" Click="Confirm"/>
+            <Button Content="终止" Style="{StaticResource DangerButton}" Click="Stop"/>
+            <TextBlock x:Name="Status" Margin="16,0" VerticalAlignment="Center" Text="就绪"/>
         </StackPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
             <TextBlock Text="轮标签(逗号分隔):" VerticalAlignment="Center"/>

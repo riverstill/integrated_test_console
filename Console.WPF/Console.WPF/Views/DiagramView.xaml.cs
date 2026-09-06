@@ -72,18 +72,30 @@ public partial class DiagramView : UserControl
                 {
                     Content = label, Width = 140, Height = 90, Tag = (id, role, kind)
                 };
+                static Brush Br(string key) =>
+                    (Brush)Application.Current.FindResource(key);
                 bool bound = role != null && App.State.Binding.ContainsKey(role);
                 if (kind == "instrument")
                 {
-                    btn.Background = bound ? Brushes.DarkGreen : Brushes.DimGray;
-                    btn.Foreground = Brushes.White;
+                    // 已绑定=强调色, 未绑定=中性底+琥珀边框提示选择
+                    btn.Background = bound ? Br("Accent") : Br("PanelBg");
+                    btn.Foreground = bound ? Br("AccentFg") : Br("TextFg");
+                    btn.BorderBrush = bound ? Br("Accent") : Br("Warn");
+                    btn.BorderThickness = new Thickness(bound ? 1 : 2);
                     btn.Click += NodeClick;
                     btn.ToolTip = bound ? App.State.Binding[role!] : "点击选择仪器";
                 }
+                else if (kind == "dut")
+                {
+                    btn.Background = Br("SelectedBg");
+                    btn.Foreground = Br("TextFg");
+                    btn.BorderBrush = Br("Warn");
+                    btn.BorderThickness = new Thickness(2);
+                    btn.FontWeight = FontWeights.SemiBold;
+                    btn.IsEnabled = false;
+                }
                 else
                 {
-                    btn.Background = kind == "dut" ? Brushes.DarkOrange : Brushes.Teal;
-                    btn.Foreground = Brushes.White;
                     btn.IsEnabled = false;
                 }
                 Canvas.SetLeft(btn, pos[id].X - 70); Canvas.SetTop(btn, pos[id].Y - 45);

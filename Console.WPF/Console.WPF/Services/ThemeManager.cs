@@ -20,6 +20,9 @@ public static class ThemeManager
         catch { return "Light"; }
     }
 
+    /// <summary>主题切换完成事件 (参数为解析后的 Light/Dark). 代码绘制的内容(如曲线)可订阅跟随.</summary>
+    public static event Action<string>? Changed;
+
     public static void Apply(string theme)
     {
         var name = Resolve(theme);
@@ -30,5 +33,8 @@ public static class ThemeManager
         var res = Application.Current.Resources;
         res.MergedDictionaries.Clear();
         res.MergedDictionaries.Add(dict);
+        Changed?.Invoke(name);
     }
+
+    public static bool IsDarkNow(string theme) => Resolve(theme) == "Dark";
 }

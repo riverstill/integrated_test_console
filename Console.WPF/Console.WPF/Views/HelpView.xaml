@@ -4,7 +4,7 @@
     <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
             <Button Content="重新加载" Padding="12,4" Click="Reload"/>
-            <TextBlock x:Name="PathText" Margin="12,0" VerticalAlignment="Center" Foreground="Gray"/>
+            <TextBlock x:Name="PathText" Margin="12,0" VerticalAlignment="Center" Foreground="{DynamicResource SubtleFg}"/>
         </StackPanel>
         <WebBrowser x:Name="Browser"/>
     </DockPanel>

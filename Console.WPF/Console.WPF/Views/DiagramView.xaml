@@ -4,7 +4,7 @@
     <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
             <Button Content="扫描仪器" Padding="12,4" Click="Scan"/>
-            <TextBlock Margin="12,0" VerticalAlignment="Center" Foreground="Gray"
+            <TextBlock Margin="12,0" VerticalAlignment="Center" Foreground="{DynamicResource SubtleFg}"
                        Text="点击绿色/灰色仪器节点, 在扫描列表中为它选择 VISA 地址"/>
         </StackPanel>
         <Grid>
@@ -19,7 +19,7 @@
                         <DataTemplate>
                             <StackPanel Margin="4">
                                 <TextBlock Text="{Binding Visa}" FontWeight="Bold"/>
-                                <TextBlock Text="{Binding Idn}" Foreground="Gray" FontSize="11" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding Idn}" Foreground="{DynamicResource SubtleFg}" FontSize="11" TextWrapping="Wrap"/>
                             </StackPanel>
                         </DataTemplate>
                     </ListBox.ItemTemplate>

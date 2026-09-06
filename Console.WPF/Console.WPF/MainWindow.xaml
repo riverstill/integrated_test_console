@@ -4,15 +4,25 @@
         xmlns:v="clr-namespace:Console.WPF.Views"
         Title="集成测试控制台" Height="760" Width="1160" Icon="app.ico">
     <DockPanel>
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,8">
-            <TextBlock Text="集成测试控制台" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-            <TextBlock x:Name="EnvInfo" Margin="16,0" VerticalAlignment="Center" Foreground="Gray" Text="自检中..."/>
-            <TextBlock Text="Python:" VerticalAlignment="Center" Margin="16,0,4,0"/>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,8">
+            <TextBlock Text="集成测试控制台" FontSize="16" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Border x:Name="StatusPill" CornerRadius="12" BorderThickness="1" Margin="14,0,0,0"
+                    Padding="10,3" VerticalAlignment="Center"
+                    BorderBrush="{DynamicResource BorderBrush}" Background="{DynamicResource PanelBg}">
+                <StackPanel Orientation="Horizontal">
+                    <Ellipse x:Name="StatusDot" Width="8" Height="8" VerticalAlignment="Center"
+                             Fill="{DynamicResource SubtleFg}"/>
+                    <TextBlock x:Name="EnvInfo" Margin="6,0,0,0" VerticalAlignment="Center"
+                               FontSize="12" Text="自检中..."/>
+                </StackPanel>
+            </Border>
+            <TextBlock Text="Python:" VerticalAlignment="Center" Margin="16,0,4,0" FontSize="12"
+                       Foreground="{DynamicResource SubtleFg}"/>
             <TextBox x:Name="PythonBox" Width="110" VerticalAlignment="Center" TextChanged="PythonChanged"/>
-            <Button Content="自动检测" Margin="4,0" Padding="10,2" Click="DetectPython"/>
+            <Button Content="自动检测" Margin="4,0" Click="DetectPython"/>
             <CheckBox x:Name="DemoCheck" Content="Demo(无硬件)" IsChecked="True"
                       VerticalAlignment="Center" Margin="8,0" Checked="DemoToggled" Unchecked="DemoToggled"/>
-            <Button Content="Python自检" Margin="8,0" Padding="10,2" Click="SelfCheck"/>
+            <Button Content="Python自检" Margin="8,0" Click="SelfCheck"/>
         </StackPanel>
         <TabControl x:Name="Tabs" Margin="10,0,10,10" SelectionChanged="TabChanged">
             <TabItem Header="1.测试项目"><v:ProjectsView x:Name="ProjectsTab"/></TabItem>
