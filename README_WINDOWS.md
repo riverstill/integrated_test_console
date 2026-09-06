@@ -41,11 +41,18 @@ IntegratedTestConsole\
 5. 第4页填轮标签 (`DUT_1,DUT_2`) 和输出目录, 点开始; 支持暂停/继续/确认下一步/终止.
 6. 第5页打开 `results/...` 看 `raw.csv / *.xlsx / *.png`.
 
-## 5. 新增测试项目 (无需改 C#)
+## 5. 新增测试项目 (无需改 C#，两种方式)
 
-复制 `engine\projects\rf_50ohm\` 为新文件夹, 改 `project.json / diagram.json /
+- **A. 项目包 (推荐)**：程序第1页“安装项目包(.itcpkg)”导入；`packages/` 目录自带两个内置项目的包；导出同样在第1页。
+- **B. 源码目录**：复制 `engine\projects\rf_50ohm\` 为新文件夹, 改 `project.json / diagram.json /
 config_schema.json / workflow.py (实现 run(cfg, binding, out_dir, ctrl, open_fn, auto_confirm, labels, demo))`,
-重启 exe 即自动出现在项目列表.
+用 `python -u -m engine pack --project <id>` 打包分发，重启 exe 即自动出现在项目列表.
+
+## 5b. 设置 / 主题 / 帮助 / 更新
+
+- “设置”页：主题（跟随系统/浅色/深色）、Python 命令、更新源 manifest 地址、检查更新。
+- “帮助”页：内置 `HELP.html` 离线帮助（与 exe 同级）。
+- 发版三处版本号同步：csproj `<Version>`、`engine/__init__.py`、`update_manifest.json`。
 
 ## 6. 故障排查
 

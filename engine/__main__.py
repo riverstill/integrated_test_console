@@ -7,6 +7,9 @@
   scan [--demo]
   run --project <id> --config cfg.json --binding bind.json --out dir
       [--demo] [--auto-confirm] [--labels L1,L2] [--rounds N]
+  pack --project <id> --out x.itcpkg
+  inspect_pkg --pkg x.itcpkg
+  install_pkg --pkg x.itcpkg [--force]
 """
 import argparse
 import importlib
@@ -121,6 +124,26 @@ def cmd_run(a):
         sys.exit(1)
 
 
+def cmd_pack(a):
+    from .packaging import pack
+    from .registry import get_project
+    p = get_project(a.project)
+    out = pack(Path(p["_dir"]), Path(a.out or f"{a.project}.itcpkg"))
+    print(json.dumps({"ok": True, "file": str(out)}, ensure_ascii=False))
+
+
+def cmd_inspect_pkg(a):
+    from .packaging import inspect
+    print(json.dumps(inspect(Path(a.pkg)), ensure_ascii=False, indent=2))
+
+
+def cmd_install_pkg(a):
+    from .packaging import install
+    from .registry import PROJECTS_DIR
+    target = install(Path(a.pkg), PROJECTS_DIR, force=a.force)
+    print(json.dumps({"ok": True, "dir": str(target)}, ensure_ascii=False))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="engine")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -137,10 +160,16 @@ def main(argv=None):
     g.add_argument("--auto-confirm", action="store_true")
     g.add_argument("--labels", default="")
     g.add_argument("--rounds", type=int, default=0)
+    g = sub.add_parser("pack"); g.add_argument("--project", required=True)
+    g.add_argument("--out", default="")
+    g = sub.add_parser("inspect_pkg"); g.add_argument("--pkg", required=True)
+    g = sub.add_parser("install_pkg"); g.add_argument("--pkg", required=True)
+    g.add_argument("--force", action="store_true")
     a = ap.parse_args(argv)
     {"list_projects": cmd_list_projects, "get_schema": cmd_get_schema,
      "get_diagram": cmd_get_diagram, "scan": cmd_scan,
-     "run": cmd_run}[a.cmd](a)
+     "run": cmd_run, "pack": cmd_pack,
+     "inspect_pkg": cmd_inspect_pkg, "install_pkg": cmd_install_pkg}[a.cmd](a)
 
 
 if __name__ == "__main__":

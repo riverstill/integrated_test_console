@@ -48,6 +48,9 @@ jobs:
           Copy-Item publish/* dist/ -Recurse
           Copy-Item engine dist/engine -Recurse
           Copy-Item README_WINDOWS.md dist/
+          Copy-Item HELP.html dist/
+          Copy-Item update_manifest.example.json dist/
+          Copy-Item packages dist/ -Recurse
           Copy-Item configs dist/ -Recurse -ErrorAction SilentlyContinue
       - uses: actions/upload-artifact@v4
         with:

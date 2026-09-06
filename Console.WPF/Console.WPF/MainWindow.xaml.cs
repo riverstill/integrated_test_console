@@ -58,6 +58,6 @@ public partial class MainWindow : Window
     private void PythonChanged(object s, TextChangedEventArgs e)
     {
         App.State.PythonPath = PythonBox.Text.Trim();
-        Services.Settings.Save(App.State.PythonPath);
+        Services.Settings.Save(App.State.PythonPath, App.State.Theme, App.State.UpdateUrl);
     }
 }

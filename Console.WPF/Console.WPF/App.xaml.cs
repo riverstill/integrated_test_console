@@ -13,8 +13,12 @@ public partial class App : Application
     {
         State.EngineRoot = LocateEngineRoot(out var log);
         EngineProbeLog = log;
-        State.PythonPath = Services.Settings.Load().PythonPath
+        var saved = Services.Settings.Load();
+        State.PythonPath = saved.PythonPath
             ?? Services.PythonEnv.DetectDefault();
+        State.Theme = saved.Theme ?? "System";
+        State.UpdateUrl = saved.UpdateUrl ?? "";
+        Services.ThemeManager.Apply(State.Theme);
         base.OnStartup(e);
     }
 

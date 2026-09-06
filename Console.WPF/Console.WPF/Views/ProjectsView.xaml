@@ -4,6 +4,8 @@
     <DockPanel Margin="8">
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
             <Button Content="刷新项目列表" Padding="12,4" Click="Refresh"/>
+            <Button Content="安装项目包(.itcpkg)" Padding="12,4" Margin="8,0" Click="InstallPkg"/>
+            <Button Content="导出选中为项目包" Padding="12,4" Click="ExportPkg"/>
             <TextBlock Margin="12,0" VerticalAlignment="Center" Foreground="Gray"
                        Text="选择一个测试项目, 后续框图/配置/运行都围绕它"/>
         </StackPanel>

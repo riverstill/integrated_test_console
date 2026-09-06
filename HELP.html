@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>集成测试控制台 - 使用帮助</title>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; max-width: 860px; margin: 0 auto;
+         padding: 24px 32px 60px; line-height: 1.8; color: #1f2937; background: #fff; }
+  h1 { border-bottom: 3px solid #0284c7; padding-bottom: 10px; }
+  h2 { color: #0284c7; margin-top: 32px; border-left: 5px solid #0284c7; padding-left: 10px; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px;
+         font-family: Consolas, monospace; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 14px 18px; border-radius: 8px;
+        overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+  th { background: #e0f2fe; }
+  .tip { background: #fefce8; border: 1px solid #facc15; border-radius: 8px; padding: 10px 14px; }
+  .ver { color: #64748b; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>集成测试控制台 <span class="ver">v0.2.0</span></h1>
+<p>C# WPF 启动器（项目管理 · 框图绑定 · 配置 · 运行监控）+ 系统 Python 测量引擎。
+新增测试项目只需放一个 <code>.itcpkg</code> 包或 Python 目录，无需改界面代码。</p>
+
+<h2>一、首次使用</h2>
+<ol>
+  <li>确认目录结构：<code>Console.WPF.exe</code> 与 <code>engine/</code>、<code>HELP.html</code> 在同一目录。</li>
+  <li>安装 Python 依赖（系统 Python）：
+    <pre>py -3 -m pip install -r engine\requirements.txt</pre></li>
+  <li>双击 exe，顶部状态条变绿 <code>就绪: 2 个测试项目</code> 即正常。</li>
+</ol>
+
+<h2>二、标准测试流程（五步）</h2>
+<ol>
+  <li><b>测试项目</b>：选中一个项目；外部项目包点“安装项目包(.itcpkg)”导入。</li>
+  <li><b>系统框图+仪器</b>：点“扫描仪器”，点击绿色/灰色仪器节点绑定 VISA 地址（★为自动推荐；无硬件勾选顶部 Demo）。</li>
+  <li><b>测试配置</b>：按表单调参，可“存为文件”复用，下次“从文件加载”。同一配置可用于多轮测量。</li>
+  <li><b>运行监控</b>：填轮标签（如 <code>DUT_1,DUT_2</code>）和输出目录，点“开始运行”；支持暂停/继续/确认下一步/终止；右侧实时曲线横轴为 log10(Hz)。</li>
+  <li><b>历史结果</b>：打开 <code>results/…</code> 查看 <code>raw.csv / *.xlsx / *.png</code>。</li>
+</ol>
+
+<h2>三、两个内置项目</h2>
+<table>
+  <tr><th>项目</th><th>拓扑</th><th>流程</th><th>输出</th></tr>
+  <tr><td>电话滤波器 300Ω（示波器法）</td><td>AWG→250Ω→DUT/直通→示波器CH2(300Ω并地)</td>
+      <td>先直通校准，再多轮 DUT</td><td>每轮独立曲线（未校准/直通/校准后）</td></tr>
+  <tr><td>射频滤波器 50Ω（频谱仪法）</td><td>AWG→DUT→频谱仪</td>
+      <td>多电路轮测（每轮一标签）</td><td>多 sheet Excel + 对比图</td></tr>
+</table>
+
+<h2>四、设置</h2>
+<ul>
+  <li><b>主题</b>：跟随系统（默认，读取 Windows 应用模式）/ 浅色 / 深色。</li>
+  <li><b>Python 命令</b>：一般保持 <code>py -3</code>；Store 版 Python 用 <code>python</code>。</li>
+  <li><b>更新源</b>：manifest 地址（JSON：version/downloadUrl/notes），为空则不检查更新。</li>
+</ul>
+
+<h2>五、程序更新（预留机制）</h2>
+<p>在“设置”页填入 manifest 地址后点“检查更新”。发版时同步改三处版本号：
+<code>Console.WPF.csproj</code> 的 <code>&lt;Version&gt;</code>、
+<code>engine/__init__.py</code> 的 <code>__version__</code>、manifest 的 <code>version</code>。
+manifest 格式见仓库根 <code>update_manifest.example.json</code>。</p>
+
+<h2>六、故障排查</h2>
+<table>
+  <tr><th>现象</th><th>处理</th></tr>
+  <tr><td>状态条红字“找不到引擎”</td><td>确认 <code>engine</code> 文件夹与 exe 同级</td></tr>
+  <tr><td>“引擎调用失败 … exit=9009”</td><td>Python 命令改成 <code>python</code> 或点“自动检测”</td></tr>
+  <tr><td>“引擎通但缺依赖”</td><td>执行第 1 节的 pip 安装命令</td></tr>
+  <tr><td>仪器扫描为空</td><td>先装 NI-VISA/Keysight VISA 及仪器 USB 驱动；或勾 Demo 模式验证流程</td></tr>
+</table>
+
+<h2>七、给开发者：新增测试项目</h2>
+<p>复制 <code>engine/projects/rf_50ohm/</code> 为新目录（或解压一个 <code>.itcpkg</code> 反向参考），改
+<code>project.json / diagram.json / config_schema.json / workflow.py（实现 run(...)）</code>，
+用 <code>python -u -m engine pack --project &lt;id&gt;</code> 打包分发，接收方在第 1 页“安装项目包”即可。</p>
+
+<div class="tip">原始手工脚本保留在 <code>origin_scripts/</code> 备查，日常测试请使用本程序。</div>
+</body>
+</html>
