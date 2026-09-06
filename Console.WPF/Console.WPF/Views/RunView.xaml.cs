@@ -21,9 +21,8 @@ public partial class RunView : UserControl
         _runner.OnEvent += ev => Dispatcher.Invoke(() => Handle(ev));
         Loaded += (_, _) =>
         {
-            Plot.Plot.XAxis.TickLabelFormatter(v => v >= 1000 ? $"{v / 1000:g}k" : $"{v:g}");
-            Plot.Plot.XAxis.SetScaleLog(10);
-            Plot.Plot.YLabel("dB"); Plot.Plot.XLabel("Hz (log)");
+            // v4 无原生对数轴: X 用 log10(Hz), 刻度即指数 (3=1k, 6=1M, 8=100M)
+            Plot.Plot.YLabel("dB"); Plot.Plot.XLabel("频率 log10(Hz)");
             Plot.Refresh();
         };
     }
@@ -86,12 +85,12 @@ public partial class RunView : UserControl
                 double y = ev["loss_db"]?.GetValue<double>()
                     ?? ev["att_db"]?.GetValue<double>()
                     ?? ev["thru_loss_db"]?.GetValue<double>() ?? double.NaN;
-                if (!double.IsNaN(y) && y > -900)
+                if (!double.IsNaN(y) && y > -900 && x > 0)
                 {
                     var key = $"R{ev["round"]}_{ev["kind"]}";
                     if (!_series.TryGetValue(key, out var pts))
                         _series[key] = pts = new List<(double, double)>();
-                    pts.Add((x, y));
+                    pts.Add((Math.Log10(x), y));
                     Plot.Plot.Clear();
                     foreach (var (k, v) in _series)
                         Plot.Plot.AddScatter(v.Select(p => p.x).ToArray(),
