@@ -29,7 +29,7 @@ public static class PythonEnv
         return "python";
     }
 
-    public static (bool ok, string msg) CheckDeps(string pythonCmd, string engineDir)
+    public static (bool ok, string msg) CheckDeps(string pythonCmd, string engineRoot)
     {
         try
         {
@@ -38,7 +38,7 @@ public static class PythonEnv
             {
                 RedirectStandardOutput = true, RedirectStandardError = true,
                 UseShellExecute = false, CreateNoWindow = true,
-                WorkingDirectory = engineDir
+                WorkingDirectory = engineRoot
             };
             using var p = Process.Start(psi)!;
             var out_ = p.StandardOutput.ReadToEnd();

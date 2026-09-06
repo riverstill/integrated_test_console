@@ -15,29 +15,51 @@ public class PyRunner : IDisposable
     public event Action<JsonNode>? OnEvent;
     public bool Running => _p != null && !_p.HasExited;
 
-    /// 同步一问一答命令(list_projects/get_schema/scan)
-    public static string Query(string pythonCmd, string engineDir, string args, int timeoutMs = 30000)
+    /// 同步一问一答命令(list_projects/get_schema/scan).
+    /// 失败时抛异常 (内含 exit code + stderr), 不再返回空字符串误导上层 JSON 解析.
+    public static string Query(string pythonCmd, string engineRoot, string args, int timeoutMs = 30000)
     {
-        var psi = new ProcessStartInfo("cmd", $"/c {pythonCmd} -u -m engine {args}")
+        ProcessStartInfo psi;
+        try
         {
-            RedirectStandardOutput = true, RedirectStandardError = true,
-            UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = engineDir
-        };
+            psi = new ProcessStartInfo("cmd", $"/c {pythonCmd} -u -m engine {args}")
+            {
+                RedirectStandardOutput = true, RedirectStandardError = true,
+                UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = engineRoot
+            };
+        }
+        catch (Exception e)
+        {
+            throw new InvalidOperationException(
+                $"无法启动 Python 进程 (命令={pythonCmd}, 目录={engineRoot}): {e.Message}", e);
+        }
         using var p = Process.Start(psi)!;
         var stdout = p.StandardOutput.ReadToEnd();
+        var stderr = p.StandardError.ReadToEnd();
         p.WaitForExit(timeoutMs);
+        if (p.ExitCode != 0 || string.IsNullOrWhiteSpace(stdout))
+        {
+            var tail = stderr.Length > 800 ? "..." + stderr[^800..] : stderr;
+            throw new InvalidOperationException(
+                $"引擎调用失败 (命令={pythonCmd}, 目录={engineRoot}, 参数={args}, exit={p.ExitCode})。" +
+                $"请先点顶部“Python自检”。stderr:\n{tail}");
+        }
         return stdout;
     }
 
     /// 长任务 run: 启动进程并异步解析 stdout 每一行 JSON
-    public void StartRun(string pythonCmd, string engineDir, string runArgs)
+    public void StartRun(string pythonCmd, string engineRoot, string runArgs)
     {
         Stop();
+        if (!File.Exists(Path.Combine(engineRoot, "engine", "__main__.py")))
+            throw new InvalidOperationException(
+                $"找不到引擎: {Path.Combine(engineRoot, "engine", "__main__.py")} 不存在。" +
+                "请确认 engine 文件夹与 exe 在同一目录。");
         var psi = new ProcessStartInfo("cmd", $"/c {pythonCmd} -u -m engine run {runArgs}")
         {
             RedirectStandardInput = true, RedirectStandardOutput = true,
             RedirectStandardError = true, UseShellExecute = false,
-            CreateNoWindow = true, WorkingDirectory = engineDir
+            CreateNoWindow = true, WorkingDirectory = engineRoot
         };
         _p = new Process { StartInfo = psi, EnableRaisingEvents = true };
         _p.OutputDataReceived += (_, e) =>

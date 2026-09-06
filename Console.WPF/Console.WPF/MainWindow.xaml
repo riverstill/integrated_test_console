@@ -6,9 +6,12 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,8">
             <TextBlock Text="集成测试控制台" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-            <TextBlock x:Name="EnvInfo" Margin="16,0" VerticalAlignment="Center" Foreground="Gray"/>
+            <TextBlock x:Name="EnvInfo" Margin="16,0" VerticalAlignment="Center" Foreground="Gray" Text="自检中..."/>
+            <TextBlock Text="Python:" VerticalAlignment="Center" Margin="16,0,4,0"/>
+            <TextBox x:Name="PythonBox" Width="110" VerticalAlignment="Center" TextChanged="PythonChanged"/>
+            <Button Content="自动检测" Margin="4,0" Padding="10,2" Click="DetectPython"/>
             <CheckBox x:Name="DemoCheck" Content="Demo(无硬件)" IsChecked="True"
-                      VerticalAlignment="Center" Margin="16,0" Checked="DemoToggled" Unchecked="DemoToggled"/>
+                      VerticalAlignment="Center" Margin="8,0" Checked="DemoToggled" Unchecked="DemoToggled"/>
             <Button Content="Python自检" Margin="8,0" Padding="10,2" Click="SelfCheck"/>
         </StackPanel>
         <TabControl x:Name="Tabs" Margin="10,0,10,10">

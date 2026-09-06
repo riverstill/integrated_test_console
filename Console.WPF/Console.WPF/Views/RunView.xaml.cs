@@ -55,7 +55,17 @@ public partial class RunView : UserControl
         if (App.State.DemoMode) args += " --demo";
         Status.Text = "运行中...";
         AppendLog("启动: " + args);
-        _runner.StartRun(App.State.PythonPath, App.State.EngineDir, args);
+        try
+        {
+            _runner.StartRun(App.State.PythonPath, App.State.EngineRoot, args);
+        }
+        catch (Exception ex)
+        {
+            Status.Text = "启动失败";
+            AppendLog("[错误] " + ex.Message);
+            MessageBox.Show(ex.Message, "启动失败",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
     }
 
     private void Handle(JsonNode ev)

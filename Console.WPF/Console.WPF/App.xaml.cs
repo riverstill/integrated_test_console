@@ -7,16 +7,34 @@ namespace Console.WPF;
 public partial class App : Application
 {
     public static AppState State { get; } = new();
+    public static string EngineProbeLog { get; private set; } = "";
 
     protected override void OnStartup(StartupEventArgs e)
     {
-        // engine/ 默认与 exe 同级, 调试时回退到源码相对路径
-        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-        var cand = Path.GetFullPath(Path.Combine(baseDir, "engine"));
-        if (!Directory.Exists(cand))
-            cand = Path.GetFullPath(Path.Combine(baseDir, "..", "..", "..", "..", "engine"));
-        State.EngineDir = cand;
-        State.PythonPath = Services.PythonEnv.DetectDefault();
+        State.EngineRoot = LocateEngineRoot(out var log);
+        EngineProbeLog = log;
+        State.PythonPath = Services.Settings.Load().PythonPath
+            ?? Services.PythonEnv.DetectDefault();
         base.OnStartup(e);
+    }
+
+    /// <summary>定位 EngineRoot: 包含 engine/__main__.py 的目录.
+    /// exe 同级优先, 再逐级向上 (覆盖 publish / bin 调试布局).</summary>
+    public static string LocateEngineRoot(out string log)
+    {
+        var tried = new List<string>();
+        var dir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
+        for (int i = 0; i < 8 && dir != null; i++, dir = dir.Parent)
+        {
+            tried.Add(dir.FullName);
+            if (File.Exists(Path.Combine(dir.FullName, "engine", "__main__.py")))
+            {
+                log = "命中: " + dir.FullName;
+                return dir.FullName;
+            }
+        }
+        log = "未找到 engine/__main__.py, 已搜索:\n" + string.Join("\n", tried);
+        // 回退 exe 同级, 后续调用会报更明确的错
+        return AppDomain.CurrentDomain.BaseDirectory;
     }
 }

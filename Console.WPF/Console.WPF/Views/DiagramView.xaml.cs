@@ -19,7 +19,7 @@ public partial class DiagramView : UserControl
         try
         {
             var arg = App.State.DemoMode ? "scan --demo" : "scan";
-            var json = PyRunner.Query(App.State.PythonPath, App.State.EngineDir, arg, 60000);
+            var json = PyRunner.Query(App.State.PythonPath, App.State.EngineRoot, arg, 60000);
             _scan = JsonNode.Parse(json)!.AsArray().Select(n =>
                 new ScanItem(n!["visa"]!.GetValue<string>(), n!["idn"]!.GetValue<string>(),
                     n!["itype"]!.GetValue<string>())).ToList();
@@ -40,7 +40,7 @@ public partial class DiagramView : UserControl
         if (p == null) return;
         try
         {
-            var json = PyRunner.Query(App.State.PythonPath, App.State.EngineDir,
+            var json = PyRunner.Query(App.State.PythonPath, App.State.EngineRoot,
                 $"get_diagram --project {p.Id}");
             var root = JsonNode.Parse(json)!;
             var nodes = root["nodes"]!.AsArray().ToList();

@@ -47,7 +47,17 @@ IntegratedTestConsole\
 config_schema.json / workflow.py (实现 run(cfg, binding, out_dir, ctrl, open_fn, auto_confirm, labels, demo))`,
 重启 exe 即自动出现在项目列表.
 
-## 6. 真机注意
+## 6. 故障排查
+
+| 现象 | 原因 / 处理 |
+|---|---|
+| 顶部状态条红色 “找不到引擎 …” | `engine` 文件夹不在 exe 旁边。解压 artifact 时保持目录结构：`Console.WPF.exe` 与 `engine/` 同级 |
+| “引擎调用失败 … exit=9009 / 'py' 不是内部命令” | 顶部 Python 输入框改成 `python`（或点“自动检测”），路径会自动记住 |
+| “引擎调用失败 … No module named engine” | 工作目录错位（旧版本 bug）。更新到最新构建即可 |
+| “引擎通但缺依赖 …” | 执行 `py -3 -m pip install -r engine\requirements.txt`，再点“Python自检” |
+| 第1页空白、无弹框 | 看顶部状态条红色文字，按上面对照处理；点“刷新项目列表”重试 |
+
+## 7. 真机注意
 
 - 首次接仪器先装 Siglent / Tek USB 驱动 + VISA; 在第2页确认 `*IDN?` 能读回.
 - 项目A (示波器法) 每频点有 AUTOSet 延时, 全程约 `点数×(0.6s)`; 项目B 约 `点数×0.06s`.

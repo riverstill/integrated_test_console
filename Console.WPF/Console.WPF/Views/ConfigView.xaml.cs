@@ -11,14 +11,26 @@ namespace Console.WPF.Views;
 /// <summary>按 config_schema.json 自动生成表单, 值存 App.State.ConfigValues.</summary>
 public partial class ConfigView : UserControl
 {
-    public ConfigView() { InitializeComponent(); Loaded += (_, _) => LoadDefault(); }
+    public ConfigView()
+    {
+        InitializeComponent();
+        Loaded += (_, _) =>
+        {
+            try { LoadDefault(); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("加载配置失败 (请先看顶部自检状态):\n" + ex.Message,
+                    "集成测试控制台", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        };
+    }
 
     private void LoadDefault(object? s = null, RoutedEventArgs? e = null)
     {
         var p = App.State.Project;
-        if (p == null) { MessageBox.Show("请先在第1页选择测试项目"); return; }
+        if (p == null) return;  // 引擎未就绪时静默, 由顶部自检条提示
         var schema = JsonNode.Parse(PyRunner.Query(App.State.PythonPath,
-            App.State.EngineDir, $"get_schema --project {p.Id}"))!.AsObject();
+            App.State.EngineRoot, $"get_schema --project {p.Id}"))!.AsObject();
         App.State.ConfigSchema = schema;
         BuildForm(schema);
     }

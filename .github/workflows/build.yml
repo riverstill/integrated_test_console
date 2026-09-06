@@ -30,6 +30,13 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install engine deps
+        run: pip install -r engine/requirements.txt
+      - name: Smoke - CLI from repo root (mirrors EngineRoot semantics)
+        run: python -u -m engine list_projects
       - name: Restore & Build
         run: dotnet build Console.WPF/IntegratedTestConsole.sln -c Release
       - name: Publish (framework-dependent, 最小体积)
