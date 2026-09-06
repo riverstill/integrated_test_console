@@ -1,0 +1,22 @@
+<UserControl x:Class="Console.WPF.Views.ProjectsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel Margin="8">
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+            <Button Content="刷新项目列表" Padding="12,4" Click="Refresh"/>
+            <TextBlock Margin="12,0" VerticalAlignment="Center" Foreground="Gray"
+                       Text="选择一个测试项目, 后续框图/配置/运行都围绕它"/>
+        </StackPanel>
+        <ListBox x:Name="List" SelectionChanged="Selected">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Margin="6">
+                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="14"/>
+                        <TextBlock Text="{Binding Description}" Foreground="Gray" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding Id}" Foreground="DarkGray" FontSize="11"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </DockPanel>
+</UserControl>

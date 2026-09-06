@@ -1,0 +1,1 @@
+{"edges": [{"dst": "dut", "src": "awg"}, {"dst": "spec", "src": "dut"}], "modes": ["dut"], "nodes": [{"id": "awg", "kind": "instrument", "label": "AWG C1\n50Ω / SINE", "role": "awg"}, {"id": "dut", "kind": "dut", "label": "DUT\n多电路轮测"}, {"id": "spec", "kind": "instrument", "label": "频谱仪\nRBW/VBW/ATT", "role": "spec"}]}

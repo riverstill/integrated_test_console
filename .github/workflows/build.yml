@@ -1,0 +1,48 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -r engine/requirements.txt
+      - name: Validate project JSONs
+        run: python -c "import json,glob; [json.load(open(f,encoding='utf-8')) for f in glob.glob('engine/projects/*/*.json')]; print('json ok')"
+      - name: Demo run tel_300ohm
+        run: python -u -m engine run --project tel_300ohm --demo --auto-confirm --labels CI_DUT --out /tmp/itc_tel
+      - name: Demo run rf_50ohm
+        run: python -u -m engine run --project rf_50ohm --demo --auto-confirm --labels CI_C1 --out /tmp/itc_rf
+
+  wpf-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+      - name: Restore & Build
+        run: dotnet build Console.WPF/IntegratedTestConsole.sln -c Release
+      - name: Publish (framework-dependent, 最小体积)
+        run: dotnet publish Console.WPF/Console.WPF/Console.WPF.csproj -c Release -o publish
+      - name: Assemble portable package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item publish/* dist/ -Recurse
+          Copy-Item engine dist/engine -Recurse
+          Copy-Item README_WINDOWS.md dist/
+          Copy-Item configs dist/ -Recurse -ErrorAction SilentlyContinue
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IntegratedTestConsole-win64
+          path: dist/

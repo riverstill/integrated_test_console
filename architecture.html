@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>集成测试控制台架构图 - C# WPF + Python Engine</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; font-family:"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif; background:#0f172a; color:#e2e8f0; }
+  header { padding:28px 40px 10px; }
+  header h1 { margin:0; font-size:24px; letter-spacing:.5px; }
+  header h1 span { color:#38bdf8; }
+  header p { color:#94a3b8; margin:8px 0 0; font-size:14px; }
+  .wrap { padding:20px 40px 60px; display:grid; gap:22px; max-width:1280px; margin:0 auto; }
+  .card { background:#1e293b; border:1px solid #334155; border-radius:16px; padding:22px 24px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+  .card h2 { margin:0 0 4px; font-size:17px; }
+  .card h2 i { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:9px; }
+  .card p.desc { margin:6px 0 16px; color:#94a3b8; font-size:13px; line-height:1.7; }
+  .mermaid { background:#0b1220; border-radius:12px; padding:18px; border:1px solid #1e3a5f; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:#94a3b8; margin-top:12px; }
+  .legend b { display:inline-block; width:12px; height:12px; border-radius:4px; margin-right:6px; vertical-align:-1px; }
+  footer { text-align:center; color:#475569; font-size:12px; padding-bottom:30px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  @media(max-width:900px){ .grid2{grid-template-columns:1fr} header,.wrap{padding-left:16px;padding-right:16px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>集成测试控制台 <span>Integrated Test Console</span></h1>
+  <p>C# WPF 启动器（管理·配置·显示） + 系统 Python 引擎（测量核心） · 实时显示 · 支持暂停 · 一配多测</p>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <h2><i style="background:#38bdf8"></i>1 · 总体架构（分层 + 进程边界）</h2>
+    <p class="desc">C# 永远不写 SCPI，所有硬件归 Python。新增测试项目只需在 <b>engine/projects/&lt;新项目&gt;/</b> 下加一个文件夹，C# 零改动自动发现。系统 Python 通过 <b>requirements.txt</b> 提供 pyvisa / numpy / matplotlib / openpyxl。</p>
+    <div class="mermaid">
+flowchart TB
+    subgraph UI["🖥️ C# WPF 启动器 / 管理配置器"]
+        direction TB
+        V1["项目选择\nProject Cards"]
+        V2["系统框图 + 仪器绑定\nDiagram + VISA 选择"]
+        V3["测试配置\nSchema 自动生成表单\n存档 / 加载 / 复用"]
+        V4["运行监控\n实时表格 + 实时曲线\n暂停 / 继续 / 终止"]
+        V5["历史对比\n多轮 DUT 叠加 / 打开报告"]
+        SET["设置页\n系统 python 路径检测\npy -3 / python / 自选"]
+    end
+
+    subgraph IPC["⚡ 进程间契约 JSON over stdio"]
+        direction LR
+        C1["stdout JSONL\npoint / phase / log / result"]
+        C2["stdin 控制行\npause / resume / stop\nconfirm_next"]
+    end
+
+    subgraph PY["🐍 系统 Python Engine -u -m engine"]
+        direction TB
+        API["engine 入口\nlist_projects / get_schema\nscan / run / stop"]
+        REG["ProjectRegistry\n插件式发现"]
+        P1["📦 tel_300ohm\nAWG + 示波器 TBS2000\n300Hz~20kHz / Thru校准"]
+        P2["📦 rf_50ohm\nAWG + 频谱仪 SSA3000X\n10kHz~100MHz / 多电路对比"]
+        PX["📦 &lt;新项目&gt; …\n只加 Python，无需改 C#"]
+        DRV["Drivers\nSiglent AWG / Tek TBS / Siglent SSA\n+ Demo 虚拟仪器"]
+        SCAN["VisaScanner\nlist_resources + *IDN?\n自动匹配 + 推荐"]
+    end
+
+    subgraph HW["🔌 仪器硬件 USB-VISA"]
+        AWG["信号源 AWG\nSiglent SDG2X"]
+        OSC["示波器\nTek TBS2000 CH2"]
+        SPEC["频谱仪\nSiglent SSA3000X"]
+    end
+
+    subgraph DATA["💾 数据文件"]
+        CFG[("configs/*.json\n测试配置存档")]
+        BIND[("binding.json\nVISA 绑定")]
+        RES[("results/日期_项目_配置/\nraw.csv + report.xlsx\n+ curve.png")]
+    end
+
+    V1 --- V2 --- V3 --- V4 --- V5
+    SET -.自检 python --version + import.-> PY
+    V2 <--->|scan / binding| IPC
+    V3 <--->|get_schema / config| IPC
+    V4 <--->|run + 实时 point| IPC
+    IPC <---> API
+    API --> REG --> P1 & P2 & PX
+    P1 & P2 <--> DRV <--> SCAN
+    DRV <-->|SCPI over VISA| AWG & OSC & SPEC
+    V3 --> CFG
+    V2 --> BIND
+    PY --> RES
+    V5 --> RES
+
+    style UI fill:#0ea5e9,stroke:#38bdf8,color:#06283d
+    style PY fill:#f59e0b,stroke:#fbbf24,color:#3a2200
+    style IPC fill:#8b5cf6,stroke:#a78bfa,color:#fff
+    style HW fill:#10b981,stroke:#34d399,color:#03271c
+    style DATA fill:#334155,stroke:#64748b,color:#fff
+    </div>
+    <div class="legend">
+      <span><b style="background:#0ea5e9"></b>C# 通用壳（不随项目增长而改）</span>
+      <span><b style="background:#f59e0b"></b>Python 测量核心（按项目增长）</span>
+      <span><b style="background:#8b5cf6"></b>双向管道契约</span>
+      <span><b style="background:#10b981"></b>硬件</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+  <div class="card">
+    <h2><i style="background:#10b981"></i>2 · 两个测试项目拓扑（框图页渲染内容）</h2>
+    <p class="desc">框图由 <b>diagram.json</b> 驱动，仪器节点可点击 → 弹出扫描列表 → 绑定 VISA。绿=已绑定且 IDN 匹配，灰=未选。</p>
+    <div class="mermaid">
+flowchart LR
+    subgraph A["项目A · tel_300ohm（电话滤波器）"]
+        direction LR
+        A1["🔶 AWG C1\nHi-Z / SINE\n20Vpp\n*点击绑定*"] --> R1["250Ω 串联"]
+        R1 --> DUT1{"DUT /\n直通"}
+        DUT1 --> S1["🔷 Scope CH2\n300Ω 并地 / AC\nAmplitude"]
+    end
+    subgraph B["项目B · rf_50ohm（射频滤波器）"]
+        direction LR
+        A2["🔶 AWG C1\n50Ω / 2Vpp\n*点击绑定*"] --> DUT2{"DUT\n多电路轮测"}
+        DUT2 --> SP["🔷 频谱仪\n50Ω / RBW10 VBW10\nATT0 / SPAN100"]
+    end
+    style A fill:#0b1220,stroke:#f59e0b,color:#fde68a
+    style B fill:#0b1220,stroke:#38bdf8,color:#bae6fd
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><i style="background:#8b5cf6"></i>3 · 运行态：实时 + 暂停时序</h2>
+    <p class="desc">暂停只发生在频点间隙，不打断 <b>INIT:IMM / *OPC?</b> 中间态。轮间天然等待换 DUT 确认，实现“一配多测”。</p>
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as 用户/C# 运行页
+    participant CS as C# PyRunner
+    participant PY as Python workflow
+    participant HW as 仪器
+    CS->>PY: run --project --config --binding --out
+    PY->>HW: OUTP ON + 初始化
+    loop 每个频点
+        CS->>PY: (若暂停) {"cmd":"pause"}
+        PY->>PY: 点间检查标志，挂起等待
+        CS->>PY: {"cmd":"resume"}
+        PY->>HW: 设 FRQ / CENT / 触发
+        HW-->>PY: 读数 Vout / Marker Y
+        PY->>CS: {"type":"point", freq, val, loss}
+        CS->>U: 表格追加 + ScottPlot 实时描点
+    end
+    PY->>CS: {"type":"need_confirm", phase:"dut_done"}
+    U->>CS: 换DUT → 确认下一轮
+    CS->>PY: {"cmd":"confirm_next", label:"Circuit_2"}
+    PY->>CS: {"type":"result", csv, xlsx, png}
+    CS->>U: 叠加对比曲线 / 打开报告目录
+    </div>
+  </div>
+  </div>
+
+  <div class="card">
+    <h2><i style="background:#f59e0b"></i>4 · 配置复用：一配多测 + 存档</h2>
+    <p class="desc">配置由 Python 的 <b>config_schema.json</b> 定义，C# 自动生成表单。同一配置可跑多轮 DUT，也可存文件下次直接加载。</p>
+    <div class="mermaid">
+flowchart LR
+    SCH["config_schema.json\n起止频率/点数/电压\n延时/RBW/VBW..."] --> FORM["C# 自动表单\n校验 + 默认值"]
+    FORM --> SAVE[("configs/*.json\n命名存档")]
+    SAVE --> SESS["TestSession\n同一配置"]
+    SESS --> R1["Round 1\nDUT-A / Circuit_1"]
+    SESS --> R2["Round 2\nDUT-B / Circuit_2"]
+    SESS --> RN["Round N …"]
+    R1 & R2 & RN --> CMP["对比图 + Excel 多sheet"]
+    style SCH fill:#f59e0b,stroke:#fbbf24,color:#3a2200
+    style CMP fill:#10b981,stroke:#34d399,color:#03271c
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><i style="background:#38bdf8"></i>5 · 落地文件结构</h2>
+    <div class="mermaid">
+flowchart TB
+    ROOT["IntegratedTestConsole/"]
+    ROOT --> WPF["Console.WPF/\nMainWindow + Views\nProjects/Diagram/Config/Run/History\nServices/PyRunner.cs + Plot(ScottPlot)"]
+    ROOT --> ENG["engine/\n__main__.py(list/get_schema/scan/run)\nrequirements.txt"]
+    ENG --> EA["projects/tel_300ohm/\nproject.json + diagram.json\nconfig_schema.json + workflow.py"]
+    ENG --> EB["projects/rf_50ohm/\nproject.json + diagram.json\nconfig_schema.json + workflow.py"]
+    ENG --> ED["drivers/\nsiglent_awg.py + tek_tbs.py\nsiglent_ssa.py + demo.py"]
+    ROOT --> CF[("configs/*.json")]
+    ROOT --> RS[("results/…/")]
+    style ROOT fill:#38bdf8,stroke:#bae6fd,color:#06283d
+    </div>
+  </div>
+
+</div>
+<footer>直接用浏览器打开本文件即可查看 · Mermaid CDN 渲染 · 建议 Chrome / Edge</footer>
+
+<script>mermaid.initialize({ startOnLoad:true, theme:'dark', securityLevel:'loose' });</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<Window x:Class="Console.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:v="clr-namespace:Console.WPF.Views"
+        Title="集成测试控制台" Height="760" Width="1160">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10,8">
+            <TextBlock Text="集成测试控制台" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            <TextBlock x:Name="EnvInfo" Margin="16,0" VerticalAlignment="Center" Foreground="Gray"/>
+            <CheckBox x:Name="DemoCheck" Content="Demo(无硬件)" IsChecked="True"
+                      VerticalAlignment="Center" Margin="16,0" Checked="DemoToggled" Unchecked="DemoToggled"/>
+            <Button Content="Python自检" Margin="8,0" Padding="10,2" Click="SelfCheck"/>
+        </StackPanel>
+        <TabControl x:Name="Tabs" Margin="10,0,10,10">
+            <TabItem Header="1.测试项目"><v:ProjectsView x:Name="ProjectsTab"/></TabItem>
+            <TabItem Header="2.系统框图+仪器"><v:DiagramView x:Name="DiagramTab"/></TabItem>
+            <TabItem Header="3.测试配置"><v:ConfigView x:Name="ConfigTab"/></TabItem>
+            <TabItem Header="4.运行监控"><v:RunView x:Name="RunTab"/></TabItem>
+            <TabItem Header="5.历史结果"><v:HistoryView x:Name="HistoryTab"/></TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

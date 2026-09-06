@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+results/
+*.png
+*.xlsx
+*.csv
+
+# Windows / .NET
+bin/
+obj/
+publish/
+*.user
+.vs/
+TestResults/
+
+# Session outputs
+/tmp/

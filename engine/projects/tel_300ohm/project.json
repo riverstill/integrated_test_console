@@ -1,0 +1,1 @@
+{"description": "AWG(串250Ω)→直通/DUT→示波器CH2(并300Ω), 先直通校准再多轮测DUT, 300Hz~20kHz", "id": "tel_300ohm", "instruments": [{"itype": "awg_siglent", "key": "awg", "label": "波形发生器 AWG"}, {"itype": "scope_tek", "key": "scope", "label": "示波器 (TBS2000)"}], "name": "电话滤波器 300Ω (示波器法)"}

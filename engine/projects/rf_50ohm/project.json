@@ -1,0 +1,1 @@
+{"description": "AWG(50Ω)→DUT→频谱仪(窄带点频接收), 10kHz~100MHz 多电路对比", "id": "rf_50ohm", "instruments": [{"itype": "awg_siglent", "key": "awg", "label": "信号源 AWG"}, {"itype": "spec_siglent", "key": "spec", "label": "频谱仪 (SSA3000X)"}], "name": "射频滤波器 50Ω (频谱仪法)"}
