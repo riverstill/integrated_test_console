@@ -14,6 +14,14 @@ import json
 import sys
 from pathlib import Path
 
+# 全链路 UTF-8: Windows 控制台代码页 (cp1252/GBK) 下 print 中文也不崩.
+# C# 侧 PyRunner 已同步设置 StandardOutput/InputEncoding = UTF8.
+for _s in (sys.stdin, sys.stdout, sys.stderr):
+    try:
+        _s.reconfigure(encoding="utf-8", errors="backslashreplace")
+    except Exception:
+        pass
+
 
 def cmd_list_projects(_):
     from .registry import list_projects

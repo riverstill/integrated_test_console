@@ -25,7 +25,9 @@ public class PyRunner : IDisposable
             psi = new ProcessStartInfo("cmd", $"/c {pythonCmd} -u -m engine {args}")
             {
                 RedirectStandardOutput = true, RedirectStandardError = true,
-                UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = engineRoot
+                UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = engineRoot,
+                StandardOutputEncoding = System.Text.Encoding.UTF8,
+                StandardErrorEncoding = System.Text.Encoding.UTF8,
             };
         }
         catch (Exception e)
@@ -59,7 +61,10 @@ public class PyRunner : IDisposable
         {
             RedirectStandardInput = true, RedirectStandardOutput = true,
             RedirectStandardError = true, UseShellExecute = false,
-            CreateNoWindow = true, WorkingDirectory = engineRoot
+            CreateNoWindow = true, WorkingDirectory = engineRoot,
+            StandardOutputEncoding = System.Text.Encoding.UTF8,
+            StandardErrorEncoding = System.Text.Encoding.UTF8,
+            StandardInputEncoding = System.Text.Encoding.UTF8,
         };
         _p = new Process { StartInfo = psi, EnableRaisingEvents = true };
         _p.OutputDataReceived += (_, e) =>
