@@ -14,7 +14,13 @@ public partial class MainWindow : Window
         PythonBox.Text = App.State.PythonPath;
         DemoCheck.IsChecked = App.State.DemoMode;
         Loaded += async (_, _) => await RunStartupCheck();
+        // HWND 就绪后按当前主题刷标题栏；主题切换时跟随
+        SourceInitialized += (_, _) => ApplyChrome();
+        Services.ThemeManager.Changed += _ => Dispatcher.Invoke(ApplyChrome);
     }
+
+    private void ApplyChrome() => Services.WindowChrome.SetDarkTitle(
+        this, Services.ThemeManager.IsDarkNow(App.State.Theme));
 
     private static Brush Br(string key) =>
         (Brush)Application.Current.FindResource(key);

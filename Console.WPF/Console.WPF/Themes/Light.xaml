@@ -5,6 +5,7 @@
   <Color x:Key="PanelBgColor">#FFFFFF</Color>
   <Color x:Key="TextFgColor">#0F172A</Color>
   <Color x:Key="SubtleFgColor">#64748B</Color>
+  <Color x:Key="TabFgColor">#64748B</Color>
   <Color x:Key="AccentColor">#0284C7</Color>
   <Color x:Key="AccentFgColor">#FFFFFF</Color>
   <Color x:Key="AccentHoverColor">#0369A1</Color>
@@ -25,6 +26,7 @@
   <SolidColorBrush x:Key="PanelBg" Color="{StaticResource PanelBgColor}"/>
   <SolidColorBrush x:Key="TextFg" Color="{StaticResource TextFgColor}"/>
   <SolidColorBrush x:Key="SubtleFg" Color="{StaticResource SubtleFgColor}"/>
+  <SolidColorBrush x:Key="TabFg" Color="{StaticResource TabFgColor}"/>
   <SolidColorBrush x:Key="Accent" Color="{StaticResource AccentColor}"/>
   <SolidColorBrush x:Key="AccentFg" Color="{StaticResource AccentFgColor}"/>
   <SolidColorBrush x:Key="AccentHover" Color="{StaticResource AccentHoverColor}"/>
@@ -159,7 +161,7 @@
     <Setter Property="Padding" Value="0,6,0,0"/>
   </Style>
   <Style TargetType="TabItem">
-    <Setter Property="Foreground" Value="{StaticResource SubtleFg}"/>
+    <Setter Property="Foreground" Value="{StaticResource TabFg}"/>
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Padding" Value="14,8"/>
     <Setter Property="FontSize" Value="13"/>
@@ -200,11 +202,85 @@
       </Trigger>
     </Style.Triggers>
   </Style>
+  <!-- ===== ComboBox：扁平模板（默认经典 chrome 在深主题下发白看不清） ===== -->
   <Style TargetType="ComboBox">
     <Setter Property="Background" Value="{StaticResource InputBg}"/>
     <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-    <Setter Property="Padding" Value="6,4"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="Padding" Value="8,5"/>
+    <Setter Property="MinHeight" Value="28"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Grid>
+            <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="6" Padding="{TemplateBinding Padding}">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ContentPresenter Grid.Column="0" VerticalAlignment="Center"
+                                  Content="{TemplateBinding SelectionBoxItem}"
+                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"/>
+                <Path Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                      Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource SubtleFg}"/>
+              </Grid>
+            </Border>
+            <!-- 透明 ToggleButton 盖住整块，点任意处开关下拉 -->
+            <ToggleButton x:Name="Tg" Background="Transparent" BorderThickness="0"
+                          Focusable="False" Opacity="0"
+                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay,
+                                              RelativeSource={RelativeSource TemplatedParent}}"/>
+            <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False"
+                   IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom"
+                   MinWidth="{TemplateBinding ActualWidth}"
+                   MaxHeight="{TemplateBinding MaxDropDownHeight}">
+              <Border Background="{StaticResource PanelBg}"
+                      BorderBrush="{StaticResource BorderBrush}"
+                      BorderThickness="1" CornerRadius="6">
+                <ScrollViewer Margin="2" MaxHeight="220">
+                  <ItemsPresenter/>
+                </ScrollViewer>
+              </Border>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+            </Trigger>
+            <Trigger Property="IsDropDownOpen" Value="True">
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Accent}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Bd" Property="Background" Value="{StaticResource AppBg}"/>
+              <Setter Property="Foreground" Value="{StaticResource SubtleFg}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  <Style TargetType="ComboBoxItem">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
+    <Setter Property="Padding" Value="8,6"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Background" Value="{StaticResource HoverBg}"/>
+      </Trigger>
+      <Trigger Property="IsSelected" Value="True">
+        <Setter Property="Background" Value="{StaticResource SelectedBg}"/>
+        <Setter Property="Foreground" Value="{StaticResource TextFg}"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
   <Style TargetType="ListBox">
     <Setter Property="Background" Value="{StaticResource PanelBg}"/>
