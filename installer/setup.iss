@@ -45,6 +45,8 @@ Filename: "{app}\Console.WPF.exe"; Description: "启动集成测试控制台"; F
 
 [Code]
 function BestPython(var Cmd: String): Boolean;
+var
+  Res: Integer;
 begin
   Result := True;
   if Exec('cmd.exe', '/c py -3 --version', '', SW_HIDE, ewWaitUntilTerminated, Res) and (Res = 0) then
