@@ -8,13 +8,17 @@ using Console.WPF.Services;
 
 namespace Console.WPF.Views;
 
-public partial class RunView : UserControl
+/// <summary>中栏: 运行控制 + 实时绘图. 事件经 RunEvent 转发给右侧后处理栏.</summary>
+public partial class RunCenterView : UserControl
 {
     private readonly PyRunner _runner = new();
     private readonly ObservableCollection<Dictionary<string, string>> _rows = new();
     private readonly Dictionary<string, List<(double x, double y)>> _series = new();
 
-    public RunView()
+    public event Action<JsonNode>? RunEvent;
+    public string LastOutDir { get; private set; } = "";
+
+    public RunCenterView()
     {
         InitializeComponent();
         Grid.ItemsSource = _rows;
@@ -26,6 +30,16 @@ public partial class RunView : UserControl
             ApplyPlotTheme();
             ThemeManager.Changed += _ => Dispatcher.Invoke(ApplyPlotTheme);
         };
+    }
+
+    /// <summary>后处理导出当前曲线. 返回文件路径.</summary>
+    public string ExportPlot(string dir)
+    {
+        Directory.CreateDirectory(dir);
+        var file = Path.Combine(dir, $"live_curve_{DateTime.Now:yyyyMMdd_HHmmss}.png");
+        Plot.Plot.SaveFig(file);
+        AppendLog("曲线已导出: " + file);
+        return file;
     }
 
     /// <summary>曲线配色跟随深浅主题 (仅改面/网格/刻度色, 数据线颜色不动).</summary>
@@ -52,7 +66,7 @@ public partial class RunView : UserControl
     private void Start(object s, RoutedEventArgs e)
     {
         var p = App.State.Project;
-        if (p == null) { MessageBox.Show("请先选择测试项目"); return; }
+        if (p == null) { MessageBox.Show("请先在第1页选择测试项目"); return; }
         // 落盘本次配置+绑定, 传绝对路径给 Python
         var sessDir = Path.GetFullPath(OutBox.Text);
         Directory.CreateDirectory(sessDir);
@@ -65,6 +79,7 @@ public partial class RunView : UserControl
             JsonSerializer.Serialize(binding,
                 new JsonSerializerOptions { WriteIndented = true }));
         _rows.Clear(); _series.Clear(); Plot.Plot.Clear();
+        LastOutDir = sessDir;
         var args = $"--project {p.Id} --config \"{Path.Combine(sessDir, "config.json")}\" " +
                    $"--binding \"{Path.Combine(sessDir, "binding.json")}\" " +
                    $"--out \"{sessDir}\" --labels \"{LabelsBox.Text}\"";
@@ -86,6 +101,7 @@ public partial class RunView : UserControl
 
     private void Handle(JsonNode ev)
     {
+        RunEvent?.Invoke(ev);
         var t = ev["type"]?.ToString();
         switch (t)
         {
@@ -127,7 +143,9 @@ public partial class RunView : UserControl
                 break;
             }
             case "round_done": AppendLog($"第{ev["round"]}轮完成 ({ev["label"]})"); break;
-            case "result": AppendLog("报告: " + ev["out_dir"]); Status.Text = "完成"; break;
+            case "result":
+                LastOutDir = ev["out_dir"]?.GetValue<string>() ?? LastOutDir;
+                AppendLog("报告: " + ev["out_dir"]); Status.Text = "完成"; break;
             case "error": AppendLog("[错误] " + ev["msg"]); Status.Text = "出错"; break;
             case "done": AppendLog(ev["msg"]?.ToString() ?? ""); Status.Text = "完成"; break;
         }

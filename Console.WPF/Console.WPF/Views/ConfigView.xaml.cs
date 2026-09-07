@@ -25,7 +25,7 @@ public partial class ConfigView : UserControl
         };
     }
 
-    private void LoadDefault(object? s = null, RoutedEventArgs? e = null)
+    public void LoadDefault(object? s = null, RoutedEventArgs? e = null)
     {
         var p = App.State.Project;
         if (p == null) return;  // 引擎未就绪时静默, 由顶部自检条提示

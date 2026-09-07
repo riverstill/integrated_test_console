@@ -1,0 +1,15 @@
+<UserControl x:Class="Console.WPF.Views.RunWorkspaceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:Console.WPF.Views">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.8*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <v:ConfigView x:Name="ConfigPart" Grid.Column="0"/>
+        <v:RunCenterView x:Name="RunCenter" Grid.Column="1"/>
+        <v:PostProcessView x:Name="PostPart" Grid.Column="2"/>
+    </Grid>
+</UserControl>

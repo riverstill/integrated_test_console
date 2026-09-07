@@ -1,0 +1,15 @@
+<UserControl x:Class="Console.WPF.Views.SystemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:v="clr-namespace:Console.WPF.Views">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="1.6*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <v:ProjectSelectView x:Name="ProjectPart" Grid.Column="0"/>
+        <v:DiagramCanvasView x:Name="DiagramPart" Grid.Column="1"/>
+        <v:InstrumentBindView x:Name="BindPart" Grid.Column="2"/>
+    </Grid>
+</UserControl>

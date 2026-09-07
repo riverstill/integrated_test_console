@@ -4,6 +4,12 @@ Hybrid app: **C# WPF shell** (`Console.WPF/`, generic, never per-project code) +
 **Python measurement engine** (`engine/`, owns all SCPI/hardware). Contract = JSON over
 stdio; C# spawns `python -u -m engine <cmd>`. Do NOT mix: new test logic goes in Python only.
 
+UI is two tabs: `SystemView` (ProjectSelect | DiagramCanvas | InstrumentBind columns,
+wired via `App.State` + C# events in `SystemView.xaml.cs`) and `RunWorkspaceView`
+(hosts `ConfigView` + `RunCenterView` + `PostProcessView`; `RunCenterView.RunEvent`
+feeds the post column; `RefreshAll()` runs on tab select). Don't resurrect the
+deleted single-purpose pages (Projects/Diagram/Run/History views).
+
 ## Python engine
 
 - No `pip` on this box — use `uv run --with pyvisa --with pyvisa-py --with numpy --with matplotlib --with openpyxl python ...`

@@ -6,11 +6,13 @@ using Console.WPF.Services;
 
 namespace Console.WPF.Views;
 
-public partial class ProjectsView : UserControl
+/// <summary>左栏: 项目选择. 选中后经 ProjectSelected 通知 SystemView 刷新框图与绑定区.</summary>
+public partial class ProjectSelectView : UserControl
 {
-    private bool _quiet = true;  // 首次自动加载失败不弹框, 只靠顶部自检条提示
+    private bool _quiet = true;
+    public event Action? ProjectSelected;
 
-    public ProjectsView() { InitializeComponent(); Loaded += (_, _) => Refresh(); }
+    public ProjectSelectView() { InitializeComponent(); Loaded += (_, _) => Refresh(); }
 
     private void Refresh(object? s = null, RoutedEventArgs? e = null)
     {
@@ -51,10 +53,9 @@ public partial class ProjectsView : UserControl
         if (dlg.ShowDialog() != true) return;
         try
         {
-            // 先预览包信息, 确认后再安装
             var info = PyRunner.Query(App.State.PythonPath, App.State.EngineRoot,
                 $"inspect_pkg --pkg \"{dlg.FileName}\"");
-            var meta = System.Text.Json.Nodes.JsonNode.Parse(info)!;
+            var meta = JsonNode.Parse(info)!;
             var msg = $"安装测试项目?\n\n名称: {meta["name"]?.GetValue<string>()}\n" +
                       $"id: {meta["id"]?.GetValue<string>()}\n说明: {meta["description"]?.GetValue<string>()}";
             if (MessageBox.Show(msg, "安装项目包",
@@ -102,6 +103,7 @@ public partial class ProjectsView : UserControl
         {
             App.State.Project = p;
             App.State.Binding.Clear(); App.State.BindingIdn.Clear();
+            ProjectSelected?.Invoke();
         }
     }
 }

@@ -66,6 +66,13 @@ public partial class MainWindow : Window
     private void DemoToggled(object s, RoutedEventArgs e) =>
         App.State.DemoMode = DemoCheck.IsChecked == true;
 
+    private void TabChanged(object s, SelectionChangedEventArgs e)
+    {
+        // 切到第2页时按当前项目/绑定刷新配置与历史
+        if (ReferenceEquals(Tabs.SelectedContent, RunWorkspace))
+            RunWorkspace.RefreshAll();
+    }
+
     private async void SelfCheck(object s, RoutedEventArgs e) => await RunStartupCheck();
 
     private void DetectPython(object s, RoutedEventArgs e) =>

@@ -25,12 +25,9 @@
                       VerticalAlignment="Center" Margin="8,0" Checked="DemoToggled" Unchecked="DemoToggled"/>
             <Button Content="Python自检" Margin="8,0" Click="SelfCheck"/>
         </StackPanel>
-        <TabControl x:Name="Tabs" Margin="10,0,10,10">
-            <TabItem Header="1.测试项目"><v:ProjectsView x:Name="ProjectsTab"/></TabItem>
-            <TabItem Header="2.系统框图+仪器"><v:DiagramView x:Name="DiagramTab"/></TabItem>
-            <TabItem Header="3.测试配置"><v:ConfigView x:Name="ConfigTab"/></TabItem>
-            <TabItem Header="4.运行监控"><v:RunView x:Name="RunTab"/></TabItem>
-            <TabItem Header="5.历史结果"><v:HistoryView x:Name="HistoryTab"/></TabItem>
+        <TabControl x:Name="Tabs" Margin="10,0,10,10" SelectionChanged="TabChanged">
+            <TabItem Header="1.测试系统"><v:SystemView x:Name="SystemTab"/></TabItem>
+            <TabItem Header="2.测试运行"><v:RunWorkspaceView x:Name="RunWorkspace"/></TabItem>
             <TabItem Header="设置"><v:SettingsView x:Name="SettingsTab"/></TabItem>
             <TabItem Header="帮助"><v:HelpView x:Name="HelpTab"/></TabItem>
         </TabControl>

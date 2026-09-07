@@ -3,37 +3,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Console.WPF.Models;
 using Console.WPF.Services;
 
 namespace Console.WPF.Views;
 
-public partial class DiagramView : UserControl
+/// <summary>中栏: 框图预览. 扫描结果经 InstrumentBindView.ScanResults 共享.
+/// 绑定成功后经 BindingChanged 通知 SystemView 刷新右侧状态区.</summary>
+public partial class DiagramCanvasView : UserControl
 {
-    private List<ScanItem> _scan = new();
+    public event Action? BindingChanged;
 
-    public DiagramView() { InitializeComponent(); Loaded += (_, _) => Draw(); }
+    public DiagramCanvasView() { InitializeComponent(); Loaded += (_, _) => Draw(); }
 
-    private void Scan(object s, RoutedEventArgs e)
-    {
-        try
-        {
-            var arg = App.State.DemoMode ? "scan --demo" : "scan";
-            var json = PyRunner.Query(App.State.PythonPath, App.State.EngineRoot, arg, 60000);
-            _scan = JsonNode.Parse(json)!.AsArray().Select(n =>
-                new ScanItem(n!["visa"]!.GetValue<string>(), n!["idn"]!.GetValue<string>(),
-                    n!["itype"]!.GetValue<string>())).ToList();
-            ScanList.ItemsSource = _scan.Select(x => new
-            {
-                x.Visa,
-                Idn = $"[{x.Itype}] {x.Idn}"
-            });
-            Draw();
-        }
-        catch (Exception ex) { MessageBox.Show("扫描失败:\n" + ex.Message); }
-    }
-
-    private void Draw()
+    public void Draw()
     {
         Canvas.Children.Clear();
         var p = App.State.Project;
@@ -109,8 +91,9 @@ public partial class DiagramView : UserControl
     {
         var btn = (Button)s;
         var (id, role, _) = ((string, string?, string))btn.Tag!;
-        if (role == null || _scan.Count == 0)
-        { MessageBox.Show("请先点“扫描仪器”"); return; }
+        var scan = InstrumentBindView.ScanResults;
+        if (role == null || scan.Count == 0)
+        { MessageBox.Show("请先在右侧点“扫描仪器”"); return; }
         var need = App.State.Project!.Instruments.First(i => i.Key == role);
         var dlg = new Window
         {
@@ -118,16 +101,17 @@ public partial class DiagramView : UserControl
             Content = new ListBox { Name = "L" }
         };
         var lb = (ListBox)dlg.Content;
-        lb.ItemsSource = _scan.Select(x =>
+        lb.ItemsSource = scan.Select(x =>
             $"{x.Visa}\n[{x.Itype}] {x.Idn}" +
             (x.Itype == need.Itype ? "  ★推荐" : ""));
         lb.MouseDoubleClick += (_, _) =>
         {
             if (lb.SelectedIndex < 0) return;
-            var sel = _scan[lb.SelectedIndex];
+            var sel = scan[lb.SelectedIndex];
             App.State.Binding[role] = sel.Visa;
             App.State.BindingIdn[role] = sel.Idn;
             dlg.Close(); Draw();
+            BindingChanged?.Invoke();
         };
         dlg.ShowDialog();
     }
